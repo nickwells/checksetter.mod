@@ -1,0 +1,15 @@
+a list of check.Float64 functions separated by ','.
+
+Write the checks as if you were writing code.
+
+The functions recognised are:
+for check.Float64 allowed values are:
+    And(check.Float64 ...)
+    Between(float, float)
+    GE(float)
+    GT(float)
+    LE(float)
+    LT(float)
+    Not(check.Float64, string)
+    Or(check.Float64 ...)
+

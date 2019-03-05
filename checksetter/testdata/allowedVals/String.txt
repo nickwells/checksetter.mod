@@ -1,4 +1,4 @@
-a list of check.String separated by ','.
+a list of check.String functions separated by ','.
 
 Write the checks as if you were writing code.
 

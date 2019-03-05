@@ -97,8 +97,8 @@ func makeStrCFStrCFList(name string, cf ...check.String) check.String {
 	return nil
 }
 
-// strCFParse returns a slice of string slice check functions and a nil error
-// if the string is successfully parsed or nil and an error if the string
+// strCFParse returns a slice of string check functions and a nil error if
+// the string is successfully parsed or nil and an error if the string
 // couldn't be converted to a slice of check functions.
 func strCFParse(s string) ([]check.String, error) {
 	expr, err := parser.ParseExpr("[]T{\n" + s + "}")
@@ -156,7 +156,7 @@ func callStrCFMaker(e *ast.CallExpr) (cf check.String, err error) {
 		return nil, err
 	}
 
-	var f func(string) error
+	var f check.String
 
 	switch fd.expectedArgs {
 	case "int":

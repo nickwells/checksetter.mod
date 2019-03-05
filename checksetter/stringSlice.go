@@ -2,10 +2,10 @@ package checksetter
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/nickwells/check.mod/check"
 	"github.com/nickwells/param.mod/v2/param"
+	"github.com/nickwells/param.mod/v2/param/psetter"
 )
 
 // StringSlice can be used to set a list of checkers for a slice of
@@ -39,33 +39,18 @@ func (s StringSlice) SetWithVal(_ string, paramVal string) error {
 // AllowedValues returns a description of the allowed values. It includes the
 // separator to be used
 func (s StringSlice) AllowedValues() string {
-	rval := "a list of " + strSlcCFName + " functions separated by ','.\n"
-	rval += `
-Write the checks as if you were writing code.
-
-The functions recognised are:` + allowedVals(strSlcCFName)
-
-	return rval
+	return allowedValues(strSlcCFName)
 }
 
 // CurrentValue returns the current setting of the parameter value
 func (s StringSlice) CurrentValue() string {
-	switch len(*s.Value) {
-	case 0:
-		return "no checks"
-	case 1:
-		return "one check"
-	}
-
-	return fmt.Sprintf("%d checks", len(*s.Value))
+	return currentValue(len(*s.Value))
 }
 
 // CheckSetter panics if the setter has not been properly created - if the
 // Value is nil.
 func (s StringSlice) CheckSetter(name string) {
 	if s.Value == nil {
-		panic(name +
-			": StringSlice Check failed:" +
-			" the Value to be set is nil")
+		panic(psetter.NilValueMessage(name, "checksetter.StringSlice"))
 	}
 }

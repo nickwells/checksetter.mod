@@ -29,11 +29,29 @@ var mapOfNameToArgMaps = map[string]map[string]string{
 		"And":            strCFName + " ...",
 		"Or":             strCFName + " ...",
 	},
-}
-
-var argTypeToNameMap = map[string]string{
-	strCFName:    strCFDesc,
-	strSlcCFName: strSlcCFDesc,
+	int64CFName: {
+		"EQ":          "int",
+		"GT":          "int",
+		"GE":          "int",
+		"LT":          "int",
+		"LE":          "int",
+		"Divides":     "int",
+		"IsAMultiple": "int",
+		"Between":     "int, int",
+		"Not":         int64CFName + ", string",
+		"And":         int64CFName + " ...",
+		"Or":          int64CFName + " ...",
+	},
+	float64CFName: {
+		"GT":      "float",
+		"GE":      "float",
+		"LT":      "float",
+		"LE":      "float",
+		"Between": "float, float",
+		"Not":     float64CFName + ", string",
+		"And":     float64CFName + " ...",
+		"Or":      float64CFName + " ...",
+	},
 }
 
 // trimArg removes any white space and '...' from the argument string and
@@ -65,10 +83,10 @@ func hasNewArgType(args string, shown map[string]bool) bool {
 	return hasNew
 }
 
-// allowedVals will return a string showing all the allowed values for the
+// allowedValFuncs will return a string showing all the allowed values for the
 // given family of check functions. It will also show the allowed values for
 // any referenced families of check functions.
-func allowedVals(s string) string {
+func allowedValFuncs(s string) string {
 	shown := map[string]bool{
 		s: false,
 	}
@@ -105,4 +123,16 @@ func getOrderedNames(nameToArgs map[string]string) []string {
 	}
 	sort.Strings(names)
 	return names
+}
+
+// allowedValues returns a string descibing the allowed values for the given
+// class of Check functions
+func allowedValues(cfName string) string {
+	rval := "a list of " + cfName + " functions separated by ','.\n"
+	rval += `
+Write the checks as if you were writing code.
+
+The functions recognised are:` + allowedValFuncs(cfName)
+
+	return rval
 }

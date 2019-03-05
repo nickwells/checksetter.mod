@@ -50,3 +50,25 @@ func TestAllowedValuesString(t *testing.T) {
 	testhelper.CheckAgainstGoldenFile(t, name, val,
 		aValGFC.PathName(name), *updateAVals)
 }
+
+func TestAllowedValuesInt64(t *testing.T) {
+	var checks []check.Int64
+	setter := checksetter.Int64{Value: &checks}
+
+	val := []byte(setter.AllowedValues())
+	name := avalTNameAbbr(t)
+
+	testhelper.CheckAgainstGoldenFile(t, name, val,
+		aValGFC.PathName(name), *updateAVals)
+}
+
+func TestAllowedValuesFloat64(t *testing.T) {
+	var checks []check.Float64
+	setter := checksetter.Float64{Value: &checks}
+
+	val := []byte(setter.AllowedValues())
+	name := avalTNameAbbr(t)
+
+	testhelper.CheckAgainstGoldenFile(t, name, val,
+		aValGFC.PathName(name), *updateAVals)
+}

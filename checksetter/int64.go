@@ -6,17 +6,17 @@ import (
 	"github.com/nickwells/param.mod/v2/param/psetter"
 )
 
-// String can be used to set a list of checkers for a string.
-type String struct {
+// Int64 can be used to set a list of checkers for an int64.
+type Int64 struct {
 	param.ValueReqMandatory
 
-	Value *[]check.String
+	Value *[]check.Int64
 }
 
 // SetWithVal (called when a value follows the parameter) splits the value
-// into a slice of check.String's and sets the Value accordingly.
-func (s String) SetWithVal(_ string, paramVal string) error {
-	v, err := strCFParse(paramVal)
+// into a slice of check.Int64's and sets the Value accordingly.
+func (s Int64) SetWithVal(_ string, paramVal string) error {
+	v, err := int64CFParse(paramVal)
 	if err != nil {
 		return err
 	}
@@ -27,19 +27,19 @@ func (s String) SetWithVal(_ string, paramVal string) error {
 
 // AllowedValues returns a description of the allowed values. It includes the
 // separator to be used
-func (s String) AllowedValues() string {
-	return allowedValues(strCFName)
+func (s Int64) AllowedValues() string {
+	return allowedValues(int64CFName)
 }
 
 // CurrentValue returns the current setting of the parameter value
-func (s String) CurrentValue() string {
+func (s Int64) CurrentValue() string {
 	return currentValue(len(*s.Value))
 }
 
 // CheckSetter panics if the setter has not been properly created - if the
 // Value is nil.
-func (s String) CheckSetter(name string) {
+func (s Int64) CheckSetter(name string) {
 	if s.Value == nil {
-		panic(psetter.NilValueMessage(name, "checksetter.String"))
+		panic(psetter.NilValueMessage(name, "checksetter.Int64"))
 	}
 }

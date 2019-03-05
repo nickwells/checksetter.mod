@@ -163,7 +163,7 @@ func callStrSlcCFMaker(e *ast.CallExpr) (cf check.StringSlice, err error) {
 		return nil, err
 	}
 
-	var f func([]string) error
+	var f check.StringSlice
 
 	switch fd.expectedArgs {
 	case "":

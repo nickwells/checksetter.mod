@@ -1,0 +1,18 @@
+a list of check.Int64 functions separated by ','.
+
+Write the checks as if you were writing code.
+
+The functions recognised are:
+for check.Int64 allowed values are:
+    And(check.Int64 ...)
+    Between(int, int)
+    Divides(int)
+    EQ(int)
+    GE(int)
+    GT(int)
+    IsAMultiple(int)
+    LE(int)
+    LT(int)
+    Not(check.Int64, string)
+    Or(check.Int64 ...)
+
