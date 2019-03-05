@@ -1,0 +1,17 @@
+a list of check.String separated by ','.
+
+Write the checks as if you were writing code.
+
+The functions recognised are:
+for check.String allowed values are:
+    And(check.String ...)
+    HasPrefix(string)
+    HasSuffix(string)
+    LenBetween(int, int)
+    LenEQ(int)
+    LenGT(int)
+    LenLT(int)
+    MatchesPattern(regexp, string)
+    Not(check.String, string)
+    Or(check.String ...)
+
