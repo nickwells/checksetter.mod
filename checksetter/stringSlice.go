@@ -1,8 +1,6 @@
 package checksetter
 
 import (
-	"errors"
-
 	"github.com/nickwells/check.mod/check"
 	"github.com/nickwells/param.mod/v2/param"
 	"github.com/nickwells/param.mod/v2/param/psetter"
@@ -11,23 +9,16 @@ import (
 // StringSlice can be used to set a list of checkers for a slice of
 // strings.
 type StringSlice struct {
+	param.ValueReqMandatory
+
 	Value *[]check.StringSlice
-}
-
-// ValueReq returns param.Mandatory indicating that some value must follow
-// the parameter
-func (s StringSlice) ValueReq() param.ValueReq { return param.Mandatory }
-
-// Set (called when there is no following value) returns an error
-func (s StringSlice) Set(_ string) error {
-	return errors.New("no value given (it should be followed by '=...')")
 }
 
 // SetWithVal (called when a value follows the parameter) splits the value
 // into a slice of check.StringSlice's and sets the Value accordingly. It
 // will return an error if a check is breached.
 func (s StringSlice) SetWithVal(_ string, paramVal string) error {
-	v, err := strSlcCFParse(paramVal)
+	v, err := stringSliceCFParse(paramVal)
 	if err != nil {
 		return err
 	}

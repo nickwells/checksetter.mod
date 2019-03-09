@@ -1,7 +1,6 @@
 package checksetter
 
 import (
-	"errors"
 	"fmt"
 	"go/ast"
 	"go/parser"
@@ -42,64 +41,191 @@ var strSlcCFStrSlcCFList = map[string]func(...check.StringSlice) check.StringSli
 
 // makeStrSlcCF returns a StringSlice checker corresponding to the
 // given name - this is for checkers that are not parameterised
-func makeStrSlcCF(name string) check.StringSlice {
-	if f, ok := strSlcCFNoParam[name]; ok {
-		return f
+func makeStrSlcCF(_ *ast.CallExpr, fName string) (cf check.StringSlice, err error) {
+	if f, ok := strSlcCFNoParam[fName]; ok {
+		return f, nil
 	}
-	return nil
+	return nil, fmt.Errorf(
+		"can't make the %s func: %s: the name is not recognised",
+		strSlcCFName, fName)
 }
 
 // makeStrSlcCFInt returns a StringSlice checker corresponding to the
 // given name - this is for checkers that take a single integer parameter
-func makeStrSlcCFInt(name string, i int64) check.StringSlice {
-	if f, ok := strSlcCFInt[name]; ok {
-		return f(int(i))
+func makeStrSlcCFInt(e *ast.CallExpr, fName string) (cf check.StringSlice, err error) {
+	var i int64
+	errIntro := func() string {
+		return fmt.Sprintf("can't make the %s func: %s(%d):",
+			strSlcCFName, fName, i)
 	}
-	return nil
+	defer func() {
+		if r := recover(); r != nil {
+			cf = nil
+			err = fmt.Errorf("%s %v", errIntro(), r)
+		}
+	}()
+
+	if err = checkArgCount(e, 1); err != nil {
+		return nil, fmt.Errorf("%s %s", errIntro(), err)
+	}
+
+	i, err = getArgAsInt(e, 0)
+	if err != nil {
+		return nil, fmt.Errorf("%s %s", errIntro(), err)
+	}
+
+	if f, ok := strSlcCFInt[fName]; ok {
+		return f(int(i)), nil
+	}
+
+	return nil, fmt.Errorf("%s the name is not recognised", errIntro())
 }
 
 // makeStrSlcCFIntInt returns a StringSlice checker corresponding to the
 // given name - this is for checkers that take two integer parameters
-func makeStrSlcCFIntInt(name string, i, j int64) check.StringSlice {
-	if f, ok := strSlcCFIntInt[name]; ok {
-		return f(int(i), int(j))
+func makeStrSlcCFIntInt(e *ast.CallExpr, fName string) (cf check.StringSlice, err error) {
+	var i, j int64
+	errIntro := func() string {
+		return fmt.Sprintf("can't make the %s func: %s(%d, %d):",
+			strSlcCFName, fName, i, j)
 	}
-	return nil
+	defer func() {
+		if r := recover(); r != nil {
+			cf = nil
+			err = fmt.Errorf("%s %v", errIntro(), r)
+		}
+	}()
+
+	if err = checkArgCount(e, 2); err != nil {
+		return nil, fmt.Errorf("%s %s", errIntro(), err)
+	}
+
+	i, err = getArgAsInt(e, 0)
+	if err != nil {
+		return nil, fmt.Errorf("%s %s", errIntro(), err)
+	}
+	j, err = getArgAsInt(e, 1)
+	if err != nil {
+		return nil, fmt.Errorf("%s %s", errIntro(), err)
+	}
+
+	if f, ok := strSlcCFIntInt[fName]; ok {
+		return f(int(i), int(j)), nil
+	}
+
+	return nil, fmt.Errorf("%s the name is not recognised", errIntro())
 }
 
 // makeStrSlcCFStrCF returns a StringSlice checker corresponding to the
 // given name - this is for checkers that take a string check parameter
-func makeStrSlcCFStrCF(name string, csf check.String) check.StringSlice {
-	if f, ok := strSlcCFStrCF[name]; ok {
-		return f(csf)
+func makeStrSlcCFStrCF(e *ast.CallExpr, fName string) (cf check.StringSlice, err error) {
+	errIntro := "can't make the " + strSlcCFName +
+		" func: " + fName + "(" + strCFName + "):"
+	defer func() {
+		if r := recover(); r != nil {
+			cf = nil
+			err = fmt.Errorf("%s %v", errIntro, r)
+		}
+	}()
+
+	if err = checkArgCount(e, 1); err != nil {
+		return nil, fmt.Errorf("%s %s", errIntro, err)
 	}
-	return nil
+
+	argExpr, err := getArg(e, 0)
+	if err != nil {
+		return nil, fmt.Errorf("%s can't get the %s argument: %s",
+			errIntro, strCFName, err)
+	}
+	scf, err := getFuncStrCF(argExpr)
+	if err != nil {
+		return nil, fmt.Errorf("%s can't convert argument %d to %s: %s",
+			errIntro, 0, strCFName, err)
+	}
+
+	if f, ok := strSlcCFStrCF[fName]; ok {
+		return f(scf), nil
+	}
+
+	return nil, fmt.Errorf("%s the name is not recognised", errIntro)
 }
 
 // makeStrSlcCFStrSlcCFStr returns a StringSlice checker corresponding to the
 // given name - this is for checkers that take a string slice check func and
 // a string
-func makeStrSlcCFStrSlcCFStr(name string, cf check.StringSlice, s string) check.StringSlice {
-	if f, ok := strSlcCFStrSlcCFStr[name]; ok {
-		return f(cf, s)
+func makeStrSlcCFStrSlcCFStr(e *ast.CallExpr, fName string) (cf check.StringSlice, err error) {
+	var s string
+	errIntro := func() string {
+		return fmt.Sprintf("can't make the %s func: %s(%s, %s):",
+			strSlcCFName, fName, strSlcCFName, s)
 	}
-	return nil
+	defer func() {
+		if r := recover(); r != nil {
+			cf = nil
+			err = fmt.Errorf("%s %v", errIntro(), r)
+		}
+	}()
+
+	if err = checkArgCount(e, 2); err != nil {
+		return nil, fmt.Errorf("%s %s", errIntro(), err)
+	}
+
+	argExpr, err := getArg(e, 0)
+	if err != nil {
+		return nil, fmt.Errorf("%s can't get the %s argument: %s",
+			errIntro(), strSlcCFName, err)
+	}
+	sscf, err := getFuncStrSlcCF(argExpr)
+	if err != nil {
+		return nil, fmt.Errorf("%s can't convert argument %d to %s: %s",
+			errIntro(), 0, strSlcCFName, err)
+	}
+	s, err = getArgAsString(e, 1)
+	if err != nil {
+		return nil, fmt.Errorf("%s %s", errIntro(), err)
+	}
+
+	if f, ok := strSlcCFStrSlcCFStr[fName]; ok {
+		return f(sscf, s), nil
+	}
+
+	return nil, fmt.Errorf("%s the name is not recognised", errIntro())
 }
 
 // makeStrSlcCFStrSlcCFList returns a StringSlice checker corresponding to
 // the given name - this is for checkers that take a list of string slice
 // check funcs
-func makeStrSlcCFStrSlcCFList(name string, cf ...check.StringSlice) check.StringSlice {
-	if f, ok := strSlcCFStrSlcCFList[name]; ok {
-		return f(cf...)
+func makeStrSlcCFStrSlcCFList(e *ast.CallExpr, fName string) (cf check.StringSlice, err error) {
+	errIntro := "can't make the " + strSlcCFName +
+		" func: " + fName + "(" + strSlcCFName + " ...):"
+	defer func() {
+		if r := recover(); r != nil {
+			cf = nil
+			err = fmt.Errorf("%s %v", errIntro, r)
+		}
+	}()
+
+	fArgs := make([]check.StringSlice, 0, len(e.Args))
+	for i, argExpr := range e.Args {
+		sscf, err := getFuncStrSlcCF(argExpr)
+		if err != nil {
+			return nil, fmt.Errorf("%s can't convert argument %d to %s: %s",
+				errIntro, i, strSlcCFName, err)
+		}
+		fArgs = append(fArgs, sscf)
 	}
-	return nil
+
+	if f, ok := strSlcCFStrSlcCFList[fName]; ok {
+		return f(fArgs...), nil
+	}
+
+	return nil, fmt.Errorf("%s the name is not recognised", errIntro)
 }
 
-// strSlcCFParse returns a slice of string slice check functions and a nil
+// stringSliceCFParse returns a slice of string slice check functions and a nil
 // error if the string is successfully parsed or nil and an error if the
 // string couldn't be converted to a slice of check functions.
-func strSlcCFParse(s string) ([]check.StringSlice, error) {
+func stringSliceCFParse(s string) ([]check.StringSlice, error) {
 	expr, err := parser.ParseExpr("[]T{\n" + s + "}")
 	if err != nil {
 		return nil, err
@@ -108,15 +234,13 @@ func strSlcCFParse(s string) ([]check.StringSlice, error) {
 	v := make([]check.StringSlice, 0, 1)
 	cl, ok := expr.(*ast.CompositeLit)
 	if !ok {
-		return nil,
-			fmt.Errorf("unexpected type for the collection of %s: %T",
-				strSlcCFDesc, expr)
+		return nil, fmt.Errorf("unexpected type for the collection of %s: %T",
+			strSlcCFDesc, expr)
 	}
 	_, ok = cl.Type.(*ast.ArrayType)
 	if !ok {
-		return nil,
-			fmt.Errorf("unexpected type for the array of %s: %T",
-				strSlcCFDesc, cl.Type)
+		return nil, fmt.Errorf("unexpected type for the array of %s: %T",
+			strSlcCFDesc, cl.Type)
 	}
 
 	for _, elt := range cl.Elts {
@@ -137,13 +261,7 @@ func getFuncStrSlcCF(elt ast.Expr) (check.StringSlice, error) {
 	case *ast.CallExpr:
 		return callStrSlcCFMaker(e)
 	case *ast.Ident:
-		f := makeStrSlcCF(e.Name)
-		if f == nil {
-			return nil,
-				fmt.Errorf("unknown unparameterised %s: %s",
-					strSlcCFDesc, e.Name)
-		}
-		return f, nil
+		return makeStrSlcCF((*ast.CallExpr)(nil), e.Name)
 	}
 	return nil, fmt.Errorf("unexpected type: %T", elt)
 }
@@ -154,7 +272,7 @@ func callStrSlcCFMaker(e *ast.CallExpr) (cf check.StringSlice, err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			cf = nil
-			err = fmt.Errorf("Cannot create the %s func: %v", strSlcCFName, r)
+			err = fmt.Errorf("can't make the %s func: %v", strSlcCFName, r)
 		}
 	}()
 
@@ -163,97 +281,21 @@ func callStrSlcCFMaker(e *ast.CallExpr) (cf check.StringSlice, err error) {
 		return nil, err
 	}
 
-	var f check.StringSlice
-
 	switch fd.expectedArgs {
 	case "":
-		f = makeStrSlcCF(fd.name)
-		if f == nil {
-			return nil, errors.New(
-				"cannot create the " + strSlcCFDesc + ": " + fd.name)
-		}
+		return makeStrSlcCF(e, fd.name)
 	case "int":
-		i, err := getArgAsInt(e, fd, 0)
-		if err != nil {
-			return nil, err
-		}
-		f = makeStrSlcCFInt(fd.name, i)
-		if f == nil {
-			return nil, fmt.Errorf("cannot create the %s: %s(%d)",
-				strSlcCFDesc, fd.name, i)
-		}
+		return makeStrSlcCFInt(e, fd.name)
 	case "int, int":
-		i, err := getArgAsInt(e, fd, 0)
-		if err != nil {
-			return nil, err
-		}
-		j, err := getArgAsInt(e, fd, 1)
-		if err != nil {
-			return nil, err
-		}
-		f = makeStrSlcCFIntInt(fd.name, i, j)
-		if f == nil {
-			return nil, fmt.Errorf("cannot create the %s: %s(%d, %d)",
-				strSlcCFDesc, fd.name, i, j)
-		}
+		return makeStrSlcCFIntInt(e, fd.name)
 	case strCFName:
-		argExpr, err := getArg(e, fd, 0)
-		if err != nil {
-			return nil, fmt.Errorf(
-				"couldn't create the %s argument for the %s: %s(...): %s ",
-				strCFDesc, strSlcCFDesc, fd.name, err)
-		}
-		csf, err := getFuncStrCF(argExpr)
-		if err != nil {
-			return nil, fmt.Errorf(
-				"couldn't create the %s argument for the %s: %s(...): %s ",
-				strCFDesc, strSlcCFDesc, fd.name, err)
-		}
-		f = makeStrSlcCFStrCF(fd.name, csf)
-		if f == nil {
-			return nil, fmt.Errorf("cannot create the %s: %s(...)",
-				strSlcCFDesc, fd.name)
-		}
+		return makeStrSlcCFStrCF(e, fd.name)
 	case strSlcCFName + ", string":
-		argExpr, err := getArg(e, fd, 0)
-		if err != nil {
-			return nil, fmt.Errorf(
-				"couldn't create the %s argument for the %s: %s(...): %s ",
-				strSlcCFDesc, strSlcCFDesc, fd.name, err)
-		}
-		cssf, err := getFuncStrSlcCF(argExpr)
-		if err != nil {
-			return nil, fmt.Errorf(
-				"couldn't create the %s argument for the %s: %s(...): %s ",
-				strSlcCFDesc, strSlcCFDesc, fd.name, err)
-		}
-		s, err := getArgAsString(e, fd, 1)
-		if err != nil {
-			return nil, err
-		}
-		f = makeStrSlcCFStrSlcCFStr(fd.name, cssf, s)
-		if f == nil {
-			return nil, fmt.Errorf("cannot create the %s: %s(...)",
-				strSlcCFDesc, fd.name)
-		}
+		return makeStrSlcCFStrSlcCFStr(e, fd.name)
 	case strSlcCFName + " ...":
-		sscfArgs := make([]check.StringSlice, 0, len(e.Args))
-		for i, argExpr := range e.Args {
-			sscf, err := getFuncStrSlcCF(argExpr)
-			if err != nil {
-				return nil, fmt.Errorf(
-					"couldn't create the %s argument (%d) for the %s: %s(...): %s ",
-					strSlcCFDesc, i, strSlcCFDesc, fd.name, err)
-			}
-			sscfArgs = append(sscfArgs, sscf)
-		}
-		f = makeStrSlcCFStrSlcCFList(fd.name, sscfArgs...)
-		if f == nil {
-			return nil, fmt.Errorf("cannot create the %s: %s(...)",
-				strSlcCFDesc, fd.name)
-		}
+		return makeStrSlcCFStrSlcCFList(e, fd.name)
 	default:
-		return nil, fmt.Errorf("unexpected argument list: %s", fd.expectedArgs)
+		return nil, fmt.Errorf("%s has an unexpected argument list: %s",
+			fd.name, fd.expectedArgs)
 	}
-	return f, nil
 }

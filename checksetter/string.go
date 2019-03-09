@@ -16,7 +16,7 @@ type String struct {
 // SetWithVal (called when a value follows the parameter) splits the value
 // into a slice of check.String's and sets the Value accordingly.
 func (s String) SetWithVal(_ string, paramVal string) error {
-	v, err := strCFParse(paramVal)
+	v, err := stringCFParse(paramVal)
 	if err != nil {
 		return err
 	}

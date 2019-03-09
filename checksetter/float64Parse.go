@@ -35,39 +35,142 @@ var float64CFFloat64CFList = map[string]func(...check.Float64) check.Float64{
 
 // makeFloat64CFFloat returns a Float64 checker corresponding to the
 // given name - this is for checkers that take a single float parameter
-func makeFloat64CFFloat(name string, i float64) check.Float64 {
-	if f, ok := float64CFFloat[name]; ok {
-		return f(i)
+func makeFloat64CFFloat(e *ast.CallExpr, fName string) (cf check.Float64, err error) {
+	var v float64
+	errIntro := func() string {
+		return fmt.Sprintf("can't make the %s func: %s(%f):",
+			float64CFName, fName, v)
 	}
-	return nil
+	defer func() {
+		if r := recover(); r != nil {
+			cf = nil
+			err = fmt.Errorf("%s %v", errIntro(), r)
+		}
+	}()
+
+	if err = checkArgCount(e, 1); err != nil {
+		return nil, fmt.Errorf("%s %s", errIntro(), err)
+	}
+
+	v, err = getArgAsFloat(e, 0)
+	if err != nil {
+		return nil, fmt.Errorf("%s %s", errIntro(), err)
+	}
+
+	if f, ok := float64CFFloat[fName]; ok {
+		return f(v), nil
+	}
+
+	return nil, fmt.Errorf("%s the name is not recognised", errIntro())
 }
 
 // makeFloat64CFFloatFloat returns a Float64 checker corresponding to the
 // given name - this is for checkers that take two float parameters
-func makeFloat64CFFloatFloat(name string, i, j float64) check.Float64 {
-	if f, ok := float64CFFloatFloat[name]; ok {
-		return f(i, j)
+func makeFloat64CFFloatFloat(e *ast.CallExpr, fName string) (cf check.Float64, err error) {
+	var v, w float64
+	errIntro := func() string {
+		return fmt.Sprintf("can't make the %s func: %s(%f, %f):",
+			float64CFName, fName, v, w)
 	}
-	return nil
+	defer func() {
+		if r := recover(); r != nil {
+			cf = nil
+			err = fmt.Errorf("%s %v", errIntro(), r)
+		}
+	}()
+
+	if err = checkArgCount(e, 2); err != nil {
+		return nil, fmt.Errorf("%s %s", errIntro(), err)
+	}
+
+	v, err = getArgAsFloat(e, 0)
+	if err != nil {
+		return nil, fmt.Errorf("%s %s", errIntro(), err)
+	}
+
+	w, err = getArgAsFloat(e, 0)
+	if err != nil {
+		return nil, fmt.Errorf("%s %s", errIntro(), err)
+	}
+
+	if f, ok := float64CFFloatFloat[fName]; ok {
+		return f(v, w), nil
+	}
+
+	return nil, fmt.Errorf("%s the name is not recognised", errIntro())
 }
 
 // makeFloat64CFFloat64CFStr returns a Float64 checker corresponding to the
 // given name - this is for checkers that take a Float64 check func and a
 // string parameter
-func makeFloat64CFFloat64CFStr(name string, cf check.Float64, s string) check.Float64 {
-	if f, ok := float64CFFloat64CFStr[name]; ok {
-		return f(cf, s)
+func makeFloat64CFFloat64CFStr(e *ast.CallExpr, fName string) (cf check.Float64, err error) {
+	var s string
+	errIntro := func() string {
+		return fmt.Sprintf("can't make the %s func: %s(%s, %s):",
+			float64CFName, fName, float64CFName, s)
 	}
-	return nil
+	defer func() {
+		if r := recover(); r != nil {
+			cf = nil
+			err = fmt.Errorf("%s %v", errIntro(), r)
+		}
+	}()
+
+	if err = checkArgCount(e, 2); err != nil {
+		return nil, fmt.Errorf("%s %s", errIntro(), err)
+	}
+
+	argExpr, err := getArg(e, 0)
+	if err != nil {
+		return nil, fmt.Errorf("%s can't get the %s argument: %s",
+			errIntro(), float64CFName, err)
+	}
+	fcf, err := getFuncFloat64CF(argExpr)
+	if err != nil {
+		return nil, fmt.Errorf("%s can't convert argument %d to %s: %s",
+			errIntro(), 0, float64CFName, err)
+	}
+	s, err = getArgAsString(e, 1)
+	if err != nil {
+		return nil, fmt.Errorf("%s %s", errIntro(), err)
+	}
+
+	if f, ok := float64CFFloat64CFStr[fName]; ok {
+		return f(fcf, s), nil
+	}
+
+	return nil, fmt.Errorf("%s the name is not recognised", errIntro())
 }
 
 // makeFloat64CFFloat64CFList returns a Float64 checker corresponding to the
 // given name - this is for checkers that take a list of float check funcs
-func makeFloat64CFFloat64CFList(name string, cf ...check.Float64) check.Float64 {
-	if f, ok := float64CFFloat64CFList[name]; ok {
-		return f(cf...)
+func makeFloat64CFFloat64CFList(e *ast.CallExpr, fName string) (cf check.Float64, err error) {
+	errIntro := func() string {
+		return fmt.Sprintf("can't make the %s func: %s(%s ...):",
+			float64CFName, fName, float64CFName)
 	}
-	return nil
+	defer func() {
+		if r := recover(); r != nil {
+			cf = nil
+			err = fmt.Errorf("%s %v", errIntro(), r)
+		}
+	}()
+
+	fArgs := make([]check.Float64, 0, len(e.Args))
+	for i, argExpr := range e.Args {
+		fcf, err := getFuncFloat64CF(argExpr)
+		if err != nil {
+			return nil, fmt.Errorf("%s can't convert argument %d to %s: %s",
+				errIntro(), i, float64CFName, err)
+		}
+		fArgs = append(fArgs, fcf)
+	}
+
+	if f, ok := float64CFFloat64CFList[fName]; ok {
+		return f(fArgs...), nil
+	}
+
+	return nil, fmt.Errorf("%s the name is not recognised", errIntro())
 }
 
 // float64CFParse returns a slice of float64 check functions and a nil error
@@ -82,15 +185,13 @@ func float64CFParse(s string) ([]check.Float64, error) {
 	v := make([]check.Float64, 0, 1)
 	cl, ok := expr.(*ast.CompositeLit)
 	if !ok {
-		return nil,
-			fmt.Errorf("unexpected type for the collection of %s: %T",
-				float64CFDesc, expr)
+		return nil, fmt.Errorf("unexpected type for the collection of %s: %T",
+			float64CFDesc, expr)
 	}
 	_, ok = cl.Type.(*ast.ArrayType)
 	if !ok {
-		return nil,
-			fmt.Errorf("unexpected type for the array of %s: %T",
-				float64CFDesc, cl.Type)
+		return nil, fmt.Errorf("unexpected type for the array of %s: %T",
+			float64CFDesc, cl.Type)
 	}
 
 	for _, elt := range cl.Elts {
@@ -129,73 +230,17 @@ func callFloat64CFMaker(e *ast.CallExpr) (cf check.Float64, err error) {
 		return nil, err
 	}
 
-	var f check.Float64
-
 	switch fd.expectedArgs {
 	case "float":
-		i, err := getArgAsFloat(e, fd, 0)
-		if err != nil {
-			return nil, err
-		}
-		f = makeFloat64CFFloat(fd.name, i)
-		if f == nil {
-			return nil, fmt.Errorf("cannot create the %s: %s(%f)",
-				float64CFDesc, fd.name, i)
-		}
+		return makeFloat64CFFloat(e, fd.name)
 	case "float, float":
-		i, err := getArgAsFloat(e, fd, 0)
-		if err != nil {
-			return nil, err
-		}
-		j, err := getArgAsFloat(e, fd, 1)
-		if err != nil {
-			return nil, err
-		}
-		f = makeFloat64CFFloatFloat(fd.name, i, j)
-		if f == nil {
-			return nil, fmt.Errorf("cannot create the %s: %s(%f, %f)",
-				float64CFDesc, fd.name, i, j)
-		}
+		return makeFloat64CFFloatFloat(e, fd.name)
 	case float64CFName + ", string":
-		argExpr, err := getArg(e, fd, 0)
-		if err != nil {
-			return nil, fmt.Errorf(
-				"couldn't create the %s argument for the %s: %s(...): %s ",
-				float64CFDesc, float64CFDesc, fd.name, err)
-		}
-		cssf, err := getFuncFloat64CF(argExpr)
-		if err != nil {
-			return nil, fmt.Errorf(
-				"couldn't create the %s argument for the %s: %s(...): %s ",
-				float64CFDesc, float64CFDesc, fd.name, err)
-		}
-		s, err := getArgAsString(e, fd, 1)
-		if err != nil {
-			return nil, err
-		}
-		f = makeFloat64CFFloat64CFStr(fd.name, cssf, s)
-		if f == nil {
-			return nil, fmt.Errorf("cannot create the %s: %s(...)",
-				float64CFDesc, fd.name)
-		}
+		return makeFloat64CFFloat64CFStr(e, fd.name)
 	case float64CFName + " ...":
-		scfArgs := make([]check.Float64, 0, len(e.Args))
-		for i, argExpr := range e.Args {
-			scf, err := getFuncFloat64CF(argExpr)
-			if err != nil {
-				return nil, fmt.Errorf(
-					"couldn't create the %s argument (%d) for the %s: %s(...): %s ",
-					float64CFDesc, i, float64CFDesc, fd.name, err)
-			}
-			scfArgs = append(scfArgs, scf)
-		}
-		f = makeFloat64CFFloat64CFList(fd.name, scfArgs...)
-		if f == nil {
-			return nil, fmt.Errorf("cannot create the %s: %s(...)",
-				float64CFDesc, fd.name)
-		}
+		return makeFloat64CFFloat64CFList(e, fd.name)
 	default:
-		return nil, fmt.Errorf("unexpected argument list: %s", fd.expectedArgs)
+		return nil, fmt.Errorf("%s has an unexpected argument list: %s",
+			fd.name, fd.expectedArgs)
 	}
-	return f, nil
 }

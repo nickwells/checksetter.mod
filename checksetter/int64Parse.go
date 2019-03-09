@@ -36,45 +36,146 @@ var int64CFInt64CFList = map[string]func(...check.Int64) check.Int64{
 	"Or":  check.Int64Or,
 }
 
-// makeInt64CFInt returns an Int64 checker corresponding to the
-// given name - this is for checkers that take a single integer parameter
-func makeInt64CFInt(name string, i int64) check.Int64 {
-	if f, ok := int64CFInt[name]; ok {
-		return f(i)
+// makeInt64CFInt returns an Int64 checker corresponding to the given name -
+// this is for checkers that take a single integer parameter
+func makeInt64CFInt(e *ast.CallExpr, fName string) (cf check.Int64, err error) {
+	var i int64
+	errIntro := func() string {
+		return fmt.Sprintf("can't make the %s func: %s(%d):",
+			int64CFName, fName, i)
 	}
-	return nil
+	defer func() {
+		if r := recover(); r != nil {
+			cf = nil
+			err = fmt.Errorf("%s %v", errIntro(), r)
+		}
+	}()
+
+	if err = checkArgCount(e, 1); err != nil {
+		return nil, fmt.Errorf("%s %s", errIntro(), err)
+	}
+
+	i, err = getArgAsInt(e, 0)
+	if err != nil {
+		return nil, fmt.Errorf("%s %s", errIntro(), err)
+	}
+
+	if f, ok := int64CFInt[fName]; ok {
+		return f(i), nil
+	}
+
+	return nil, fmt.Errorf("%s the name is not recognised", errIntro())
 }
 
-// makeInt64CFIntInt returns an Int64 checker corresponding to the
-// given name - this is for checkers that take two integer parameters
-func makeInt64CFIntInt(name string, i, j int64) check.Int64 {
-	if f, ok := int64CFIntInt[name]; ok {
-		return f(i, j)
+// makeInt64CFIntInt returns an Int64 checker corresponding to the given name
+// - this is for checkers that take two integer parameters
+func makeInt64CFIntInt(e *ast.CallExpr, fName string) (cf check.Int64, err error) {
+	var i, j int64
+	errIntro := func() string {
+		return fmt.Sprintf("can't make the %s func: %s(%d, %d):",
+			int64CFName, fName, i, j)
 	}
-	return nil
+	defer func() {
+		if r := recover(); r != nil {
+			cf = nil
+			err = fmt.Errorf("%s %v",
+				errIntro(), r)
+		}
+	}()
+
+	if err = checkArgCount(e, 2); err != nil {
+		return nil, fmt.Errorf("%s %s", errIntro(), err)
+	}
+
+	i, err = getArgAsInt(e, 0)
+	if err != nil {
+		return nil, fmt.Errorf("%s %s", errIntro(), err)
+	}
+	j, err = getArgAsInt(e, 1)
+	if err != nil {
+		return nil, fmt.Errorf("%s %s", errIntro(), err)
+	}
+
+	if f, ok := int64CFIntInt[fName]; ok {
+		return f(i, j), nil
+	}
+
+	return nil, fmt.Errorf("%s the name is not recognised", errIntro())
 }
 
-// makeInt64CFInt64CFStr returns an Int64 checker corresponding to the given name
-// - this is for checkers that take an Int64 check func and a string
+// makeInt64CFInt64CFStr returns an Int64 checker corresponding to the given
+// name - this is for checkers that take an Int64 check func and a string
 // parameter
-func makeInt64CFInt64CFStr(name string, cf check.Int64, s string) check.Int64 {
-	if f, ok := int64CFInt64CFStr[name]; ok {
-		return f(cf, s)
+func makeInt64CFInt64CFStr(e *ast.CallExpr, fName string) (cf check.Int64, err error) {
+	var s string
+	errIntro := func() string {
+		return fmt.Sprintf("can't make the %s func: %s(%s, %s):",
+			int64CFName, fName, int64CFName, s)
 	}
-	return nil
+	defer func() {
+		if r := recover(); r != nil {
+			cf = nil
+			err = fmt.Errorf("%s %v", errIntro(), r)
+		}
+	}()
+
+	if err = checkArgCount(e, 2); err != nil {
+		return nil, fmt.Errorf("%s %s", errIntro(), err)
+	}
+
+	argExpr, err := getArg(e, 0)
+	if err != nil {
+		return nil, fmt.Errorf("%s can't get the %s argument: %s",
+			errIntro(), int64CFName, err)
+	}
+	icf, err := getFuncInt64CF(argExpr)
+	if err != nil {
+		return nil, fmt.Errorf("%s can't convert argument %d to %s: %s",
+			errIntro(), 0, int64CFName, err)
+	}
+	s, err = getArgAsString(e, 1)
+	if err != nil {
+		return nil, fmt.Errorf("%s %s", errIntro(), err)
+	}
+
+	if f, ok := int64CFInt64CFStr[fName]; ok {
+		return f(icf, s), nil
+	}
+
+	return nil, fmt.Errorf("%s the name is not recognised", errIntro())
 }
 
 // makeInt64CFInt64CFList returns an Int64 checker corresponding to the given
 // name - this is for checkers that take a list of int64 check funcs
-func makeInt64CFInt64CFList(name string, cf ...check.Int64) check.Int64 {
-	if f, ok := int64CFInt64CFList[name]; ok {
-		return f(cf...)
+func makeInt64CFInt64CFList(e *ast.CallExpr, fName string) (cf check.Int64, err error) {
+	errIntro := "can't make the " + int64CFName +
+		" func: " + fName + "(" + int64CFName + " ...):"
+	defer func() {
+		if r := recover(); r != nil {
+			cf = nil
+			err = fmt.Errorf("%s %v", errIntro, r)
+		}
+	}()
+
+	fArgs := make([]check.Int64, 0, len(e.Args))
+	for i, argExpr := range e.Args {
+		scf, err := getFuncInt64CF(argExpr)
+		if err != nil {
+			return nil, fmt.Errorf("%s can't convert argument %d to %s: %s",
+				errIntro, i, int64CFName, err)
+		}
+		fArgs = append(fArgs, scf)
 	}
-	return nil
+
+	if f, ok := int64CFInt64CFList[fName]; ok {
+		return f(fArgs...), nil
+	}
+
+	return nil, fmt.Errorf("%s the name is not recognised", errIntro)
 }
 
-// int64CFParse returns a slice of int64 check functions and a nil error
-// if the string is successfully parsed or nil and an error if the string
+// int64CFParse returns a slice of int64 check functions and a nil error if
+// the string is successfully parsed or nil and an error if the string
 // couldn't be converted to a slice of check functions.
 func int64CFParse(s string) ([]check.Int64, error) {
 	expr, err := parser.ParseExpr("[]T{\n" + s + "}")
@@ -85,15 +186,13 @@ func int64CFParse(s string) ([]check.Int64, error) {
 	v := make([]check.Int64, 0, 1)
 	cl, ok := expr.(*ast.CompositeLit)
 	if !ok {
-		return nil,
-			fmt.Errorf("unexpected type for the collection of %s: %T",
-				int64CFDesc, expr)
+		return nil, fmt.Errorf("unexpected type for the collection of %s: %T",
+			int64CFDesc, expr)
 	}
 	_, ok = cl.Type.(*ast.ArrayType)
 	if !ok {
-		return nil,
-			fmt.Errorf("unexpected type for the array of %s: %T",
-				int64CFDesc, cl.Type)
+		return nil, fmt.Errorf("unexpected type for the array of %s: %T",
+			int64CFDesc, cl.Type)
 	}
 
 	for _, elt := range cl.Elts {
@@ -132,73 +231,17 @@ func callInt64CFMaker(e *ast.CallExpr) (cf check.Int64, err error) {
 		return nil, err
 	}
 
-	var f check.Int64
-
 	switch fd.expectedArgs {
 	case "int":
-		i, err := getArgAsInt(e, fd, 0)
-		if err != nil {
-			return nil, err
-		}
-		f = makeInt64CFInt(fd.name, i)
-		if f == nil {
-			return nil, fmt.Errorf("cannot create the %s: %s(%d)",
-				int64CFDesc, fd.name, i)
-		}
+		return makeInt64CFInt(e, fd.name)
 	case "int, int":
-		i, err := getArgAsInt(e, fd, 0)
-		if err != nil {
-			return nil, err
-		}
-		j, err := getArgAsInt(e, fd, 1)
-		if err != nil {
-			return nil, err
-		}
-		f = makeInt64CFIntInt(fd.name, i, j)
-		if f == nil {
-			return nil, fmt.Errorf("cannot create the %s: %s(%d, %d)",
-				int64CFDesc, fd.name, i, j)
-		}
+		return makeInt64CFIntInt(e, fd.name)
 	case int64CFName + ", string":
-		argExpr, err := getArg(e, fd, 0)
-		if err != nil {
-			return nil, fmt.Errorf(
-				"couldn't create the %s argument for the %s: %s(...): %s ",
-				int64CFDesc, int64CFDesc, fd.name, err)
-		}
-		cssf, err := getFuncInt64CF(argExpr)
-		if err != nil {
-			return nil, fmt.Errorf(
-				"couldn't create the %s argument for the %s: %s(...): %s ",
-				int64CFDesc, int64CFDesc, fd.name, err)
-		}
-		s, err := getArgAsString(e, fd, 1)
-		if err != nil {
-			return nil, err
-		}
-		f = makeInt64CFInt64CFStr(fd.name, cssf, s)
-		if f == nil {
-			return nil, fmt.Errorf("cannot create the %s: %s(...)",
-				int64CFDesc, fd.name)
-		}
+		return makeInt64CFInt64CFStr(e, fd.name)
 	case int64CFName + " ...":
-		scfArgs := make([]check.Int64, 0, len(e.Args))
-		for i, argExpr := range e.Args {
-			scf, err := getFuncInt64CF(argExpr)
-			if err != nil {
-				return nil, fmt.Errorf(
-					"couldn't create the %s argument (%d) for the %s: %s(...): %s ",
-					int64CFDesc, i, int64CFDesc, fd.name, err)
-			}
-			scfArgs = append(scfArgs, scf)
-		}
-		f = makeInt64CFInt64CFList(fd.name, scfArgs...)
-		if f == nil {
-			return nil, fmt.Errorf("cannot create the %s: %s(...)",
-				int64CFDesc, fd.name)
-		}
+		return makeInt64CFInt64CFList(e, fd.name)
 	default:
-		return nil, fmt.Errorf("unexpected argument list: %s", fd.expectedArgs)
+		return nil, fmt.Errorf("%s has an unexpected argument list: %s",
+			fd.name, fd.expectedArgs)
 	}
-	return f, nil
 }

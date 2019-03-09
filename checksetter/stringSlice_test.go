@@ -68,7 +68,7 @@ func TestChkStringSlice(t *testing.T) {
 			errExpected: true,
 			errContains: []string{
 				"bad function: ",
-				"Cannot create the check.StringSlice func: ",
+				"can't make the check.StringSlice func: ",
 				"Impossible checks passed to StringSliceLenBetween",
 			},
 		},
@@ -96,51 +96,5 @@ func TestChkStringSlice(t *testing.T) {
 				err, tc.sliceErrorExpected, tc.sliceErrContains)
 
 		}
-	}
-}
-
-// panicSafeCheckSetterStringSlice calls the CheckSetter method on the
-// checksetter and returns values showing whether the call panicked and if so
-// what error it found
-func panicSafeCheckSetterStringSlice(cs checksetter.StringSlice) (panicked bool, panicVal interface{}) {
-	defer func() {
-		if r := recover(); r != nil {
-			panicked = true
-			panicVal = r
-		}
-	}()
-	cs.CheckSetter("dummy")
-	return false, nil
-}
-
-func TestCheckSetterStringSlice(t *testing.T) {
-	var checks []check.StringSlice
-
-	badSetter := checksetter.StringSlice{}
-	panicked, panicVal := panicSafeCheckSetterStringSlice(badSetter)
-	testhelper.PanicCheckString(t, "bad setter - Value not set",
-		panicked, true, panicVal,
-		[]string{
-			"StringSlice Check failed:",
-			"the Value to be set is nil",
-		})
-	goodSetter := checksetter.StringSlice{Value: &checks}
-	panicked, panicVal = panicSafeCheckSetterStringSlice(goodSetter)
-	testhelper.PanicCheckString(t, "good setter",
-		panicked, false, panicVal, []string{})
-}
-
-func TestCurrentValueStringSlice(t *testing.T) {
-	var checks []check.StringSlice
-	setter := checksetter.StringSlice{Value: &checks}
-
-	for i, expVal := range []string{"no checks", "one check", "2 checks"} {
-		val := setter.CurrentValue()
-		if expVal != val {
-			t.Logf("after %d additions\n", i)
-			t.Logf("\tcurrent value should be '%s'\n", expVal)
-			t.Errorf("\t                but was '%s'\n", val)
-		}
-		checks = append(checks, nil)
 	}
 }

@@ -44,63 +44,220 @@ var strCFStrCFList = map[string]func(...check.String) check.String{
 
 // makeStrCFInt returns a String checker corresponding to the
 // given name - this is for checkers that take a single integer parameter
-func makeStrCFInt(name string, i int64) check.String {
-	if f, ok := strCFInt[name]; ok {
-		return f(int(i))
+func makeStrCFInt(e *ast.CallExpr, fName string) (cf check.String, err error) {
+	var i int64
+	errIntro := func() string {
+		return fmt.Sprintf("can't make the %s func: %s(%d):",
+			strCFName, fName, i)
 	}
-	return nil
+	defer func() {
+		if r := recover(); r != nil {
+			cf = nil
+			err = fmt.Errorf("%s %v", errIntro(), r)
+		}
+	}()
+
+	if err = checkArgCount(e, 1); err != nil {
+		return nil, fmt.Errorf("%s %s", errIntro(), err)
+	}
+
+	i, err = getArgAsInt(e, 0)
+	if err != nil {
+		return nil, fmt.Errorf("%s %s", errIntro(), err)
+	}
+
+	if f, ok := strCFInt[fName]; ok {
+		return f(int(i)), nil
+	}
+
+	return nil, fmt.Errorf("%s the name is not recognised", errIntro())
 }
 
 // makeStrCFIntInt returns a String checker corresponding to the
 // given name - this is for checkers that take two integer parameters
-func makeStrCFIntInt(name string, i, j int64) check.String {
-	if f, ok := strCFIntInt[name]; ok {
-		return f(int(i), int(j))
+func makeStrCFIntInt(e *ast.CallExpr, fName string) (cf check.String, err error) {
+	var i, j int64
+	errIntro := func() string {
+		return fmt.Sprintf("can't make the %s func: %s(%d, %d):",
+			strCFName, fName, i, j)
 	}
-	return nil
+	defer func() {
+		if r := recover(); r != nil {
+			cf = nil
+			err = fmt.Errorf("%s %v", errIntro(), r)
+		}
+	}()
+
+	if err = checkArgCount(e, 2); err != nil {
+		return nil, fmt.Errorf("%s %s", errIntro(), err)
+	}
+
+	i, err = getArgAsInt(e, 0)
+	if err != nil {
+		return nil, fmt.Errorf("%s %s", errIntro(), err)
+	}
+	j, err = getArgAsInt(e, 1)
+	if err != nil {
+		return nil, fmt.Errorf("%s %s", errIntro(), err)
+	}
+
+	if f, ok := strCFIntInt[fName]; ok {
+		return f(int(i), int(j)), nil
+	}
+
+	return nil, fmt.Errorf("%s the name is not recognised", errIntro())
 }
 
 // makeStrCFStr returns a String checker corresponding to the
 // given name - this is for checkers that take a single string parameter
-func makeStrCFStr(name, s string) check.String {
-	if f, ok := strCFStr[name]; ok {
-		return f(s)
+func makeStrCFStr(e *ast.CallExpr, fName string) (cf check.String, err error) {
+	var s string
+	errIntro := func() string {
+		return fmt.Sprintf("can't make the %s func: %s(%s):",
+			strCFName, fName, s)
 	}
-	return nil
+	defer func() {
+		if r := recover(); r != nil {
+			cf = nil
+			err = fmt.Errorf("%s %v", errIntro(), r)
+		}
+	}()
+
+	if err = checkArgCount(e, 1); err != nil {
+		return nil, fmt.Errorf("%s %s", errIntro(), err)
+	}
+
+	s, err = getArgAsString(e, 0)
+	if err != nil {
+		return nil, fmt.Errorf("%s %s", errIntro(), err)
+	}
+
+	if f, ok := strCFStr[fName]; ok {
+		return f(s), nil
+	}
+
+	return nil, fmt.Errorf("%s the name is not recognised", errIntro())
 }
 
 // makeStrCFREStr returns a String checker corresponding to the given name -
-// this is for checkers that take a single string parameter
-func makeStrCFREStr(name string, re *regexp.Regexp, s string) check.String {
-	if f, ok := strCFREStr[name]; ok {
-		return f(re, s)
+// this is for checkers that take a regular expression and a single string
+// parameter
+func makeStrCFREStr(e *ast.CallExpr, fName string) (cf check.String, err error) {
+	var reStr, reDesc string
+	errIntro := func() string {
+		return fmt.Sprintf("can't make the %s func: %s(%s, %s):",
+			strCFName, fName, reStr, reDesc)
 	}
-	return nil
+	defer func() {
+		if r := recover(); r != nil {
+			cf = nil
+			err = fmt.Errorf("%s %v", errIntro(), r)
+		}
+	}()
+
+	if err = checkArgCount(e, 2); err != nil {
+		return nil, fmt.Errorf("%s %s", errIntro(), err)
+	}
+
+	reStr, err = getArgAsString(e, 0)
+	if err != nil {
+		return nil, fmt.Errorf("%s can't get the regexp: %s", errIntro(), err)
+	}
+
+	re, err := regexp.Compile(reStr)
+	if err != nil {
+		return nil, fmt.Errorf("%s the regexp doesn't compile: %s",
+			errIntro(), err)
+	}
+
+	reDesc, err = getArgAsString(e, 1)
+	if err != nil {
+		return nil, fmt.Errorf("%s can't get the regexp description: %s",
+			errIntro(), err)
+	}
+
+	if f, ok := strCFREStr[fName]; ok {
+		return f(re, reDesc), nil
+	}
+
+	return nil, fmt.Errorf("%s the name is not recognised", errIntro())
 }
 
 // makeStrCFStrCFStr returns a String checker corresponding to the given name
 // - this is for checkers that take a string check func and a string
 // parameter
-func makeStrCFStrCFStr(name string, cf check.String, s string) check.String {
-	if f, ok := strCFStrCFStr[name]; ok {
-		return f(cf, s)
+func makeStrCFStrCFStr(e *ast.CallExpr, fName string) (cf check.String, err error) {
+	var s string
+	errIntro := func() string {
+		return fmt.Sprintf("can't make the %s func: %s(%s, %s):",
+			strCFName, fName, strCFName, s)
 	}
-	return nil
+	defer func() {
+		if r := recover(); r != nil {
+			cf = nil
+			err = fmt.Errorf("%s %v", errIntro(), r)
+		}
+	}()
+
+	if err = checkArgCount(e, 2); err != nil {
+		return nil, fmt.Errorf("%s %s", errIntro(), err)
+	}
+
+	argExpr, err := getArg(e, 0)
+	if err != nil {
+		return nil, fmt.Errorf("%s can't get the %s argument: %s",
+			errIntro(), strCFName, err)
+	}
+	scf, err := getFuncStrCF(argExpr)
+	if err != nil {
+		return nil, fmt.Errorf("%s can't convert argument %d to %s: %s",
+			errIntro(), 0, strCFName, err)
+	}
+	s, err = getArgAsString(e, 1)
+	if err != nil {
+		return nil, fmt.Errorf("%s %s", errIntro(), err)
+	}
+
+	if f, ok := strCFStrCFStr[fName]; ok {
+		return f(scf, s), nil
+	}
+
+	return nil, fmt.Errorf("%s the name is not recognised", errIntro())
 }
 
 // makeStrCFStrCFList returns a String checker corresponding to the given
 // name - this is for checkers that take a list of string check funcs
-func makeStrCFStrCFList(name string, cf ...check.String) check.String {
-	if f, ok := strCFStrCFList[name]; ok {
-		return f(cf...)
+func makeStrCFStrCFList(e *ast.CallExpr, fName string) (cf check.String, err error) {
+	errIntro := "can't make the " + strCFName +
+		" func: " + fName + "(" + strCFName + " ...):"
+	defer func() {
+		if r := recover(); r != nil {
+			cf = nil
+			err = fmt.Errorf("%s %v", errIntro, r)
+		}
+	}()
+
+	fArgs := make([]check.String, 0, len(e.Args))
+	for i, argExpr := range e.Args {
+		scf, err := getFuncStrCF(argExpr)
+		if err != nil {
+			return nil, fmt.Errorf("%s can't convert argument %d to %s: %s",
+				errIntro, i, strCFName, err)
+		}
+		fArgs = append(fArgs, scf)
 	}
-	return nil
+
+	if f, ok := strCFStrCFList[fName]; ok {
+		return f(fArgs...), nil
+	}
+
+	return nil, fmt.Errorf("%s the name is not recognised", errIntro)
 }
 
 // strCFParse returns a slice of string check functions and a nil error if
 // the string is successfully parsed or nil and an error if the string
 // couldn't be converted to a slice of check functions.
-func strCFParse(s string) ([]check.String, error) {
+func stringCFParse(s string) ([]check.String, error) {
 	expr, err := parser.ParseExpr("[]T{\n" + s + "}")
 	if err != nil {
 		return nil, err
@@ -109,15 +266,13 @@ func strCFParse(s string) ([]check.String, error) {
 	v := make([]check.String, 0, 1)
 	cl, ok := expr.(*ast.CompositeLit)
 	if !ok {
-		return nil,
-			fmt.Errorf("unexpected type for the collection of %s: %T",
-				strCFDesc, expr)
+		return nil, fmt.Errorf("unexpected type for the collection of %s: %T",
+			strCFDesc, expr)
 	}
 	_, ok = cl.Type.(*ast.ArrayType)
 	if !ok {
-		return nil,
-			fmt.Errorf("unexpected type for the array of %s: %T",
-				strCFDesc, cl.Type)
+		return nil, fmt.Errorf("unexpected type for the array of %s: %T",
+			strCFDesc, cl.Type)
 	}
 
 	for _, elt := range cl.Elts {
@@ -144,115 +299,26 @@ func getFuncStrCF(elt ast.Expr) (check.String, error) {
 // callStrCFMaker calls the appropriate makeStrCF... and returns the
 // results
 func callStrCFMaker(e *ast.CallExpr) (cf check.String, err error) {
-	defer func() {
-		if r := recover(); r != nil {
-			cf = nil
-			err = fmt.Errorf("Cannot create the %s func: %v", strCFName, r)
-		}
-	}()
-
 	fd, err := getFuncDetails(e, strCFName)
 	if err != nil {
 		return nil, err
 	}
 
-	var f check.String
-
 	switch fd.expectedArgs {
 	case "int":
-		i, err := getArgAsInt(e, fd, 0)
-		if err != nil {
-			return nil, err
-		}
-		f = makeStrCFInt(fd.name, i)
-		if f == nil {
-			return nil, fmt.Errorf("cannot create the %s: %s(%d)",
-				strCFDesc, fd.name, i)
-		}
+		return makeStrCFInt(e, fd.name)
 	case "int, int":
-		i, err := getArgAsInt(e, fd, 0)
-		if err != nil {
-			return nil, err
-		}
-		j, err := getArgAsInt(e, fd, 1)
-		if err != nil {
-			return nil, err
-		}
-		f = makeStrCFIntInt(fd.name, i, j)
-		if f == nil {
-			return nil, fmt.Errorf("cannot create the %s: %s(%d, %d)",
-				strCFDesc, fd.name, i, j)
-		}
+		return makeStrCFIntInt(e, fd.name)
 	case "string":
-		s, err := getArgAsString(e, fd, 0)
-		if err != nil {
-			return nil, err
-		}
-		f = makeStrCFStr(fd.name, s)
-		if f == nil {
-			return nil, fmt.Errorf("cannot create the %s: %s(...)",
-				strCFDesc, fd.name)
-		}
+		return makeStrCFStr(e, fd.name)
 	case "regexp, string":
-		reStr, err := getArgAsString(e, fd, 0)
-		if err != nil {
-			return nil, err
-		}
-		re, err := regexp.Compile(reStr)
-		if err != nil {
-			return nil, fmt.Errorf(
-				"cannot create the regexp parameter for the %s (%s): %s",
-				strCFDesc, fd.name, err)
-		}
-		reDesc, err := getArgAsString(e, fd, 1)
-		if err != nil {
-			return nil, err
-		}
-		f = makeStrCFREStr(fd.name, re, reDesc)
-		if f == nil {
-			return nil, fmt.Errorf("cannot create the %s: %s(...)",
-				strCFDesc, fd.name)
-		}
+		return makeStrCFREStr(e, fd.name)
 	case strCFName + ", string":
-		argExpr, err := getArg(e, fd, 0)
-		if err != nil {
-			return nil, fmt.Errorf(
-				"couldn't create the %s argument for the %s: %s(...): %s ",
-				strCFDesc, strCFDesc, fd.name, err)
-		}
-		cssf, err := getFuncStrCF(argExpr)
-		if err != nil {
-			return nil, fmt.Errorf(
-				"couldn't create the %s argument for the %s: %s(...): %s ",
-				strCFDesc, strCFDesc, fd.name, err)
-		}
-		s, err := getArgAsString(e, fd, 1)
-		if err != nil {
-			return nil, err
-		}
-		f = makeStrCFStrCFStr(fd.name, cssf, s)
-		if f == nil {
-			return nil, fmt.Errorf("cannot create the %s: %s(...)",
-				strCFDesc, fd.name)
-		}
+		return makeStrCFStrCFStr(e, fd.name)
 	case strCFName + " ...":
-		scfArgs := make([]check.String, 0, len(e.Args))
-		for i, argExpr := range e.Args {
-			scf, err := getFuncStrCF(argExpr)
-			if err != nil {
-				return nil, fmt.Errorf(
-					"couldn't create the %s argument (%d) for the %s: %s(...): %s ",
-					strCFDesc, i, strCFDesc, fd.name, err)
-			}
-			scfArgs = append(scfArgs, scf)
-		}
-		f = makeStrCFStrCFList(fd.name, scfArgs...)
-		if f == nil {
-			return nil, fmt.Errorf("cannot create the %s: %s(...)",
-				strCFDesc, fd.name)
-		}
+		return makeStrCFStrCFList(e, fd.name)
 	default:
-		return nil, fmt.Errorf("unexpected argument list: %s", fd.expectedArgs)
+		return nil, fmt.Errorf("%s has an unexpected argument list: %s",
+			fd.name, fd.expectedArgs)
 	}
-	return f, nil
 }

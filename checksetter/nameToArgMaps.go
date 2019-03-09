@@ -103,7 +103,9 @@ func allowedValFuncs(s string) string {
 					rval += "    " + fn
 					if args := nameToArgs[fn]; args != "" {
 						rval += "(" + args + ")"
-						hasNew = hasNewArgType(args, shown)
+						if hasNewArgType(args, shown) {
+							hasNew = true
+						}
 					}
 					rval += "\n"
 				}

@@ -18,8 +18,7 @@ func getInt(e ast.Expr) (int64, error) {
 
 	if v.Kind != token.INT {
 		return 0,
-			fmt.Errorf(
-				"the expression should have been a literal INT, was %s",
+			fmt.Errorf("the expression should have been a literal INT, was %s",
 				v.Kind)
 	}
 	i, err := strconv.ParseInt(v.Value, 0, 64)
