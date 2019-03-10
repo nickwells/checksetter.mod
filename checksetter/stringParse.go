@@ -25,6 +25,7 @@ var strCFIntInt = map[string]func(int, int) check.String{
 }
 
 var strCFStr = map[string]func(string) check.String{
+	"Equals":    check.StringEquals,
 	"HasPrefix": check.StringHasPrefix,
 	"HasSuffix": check.StringHasSuffix,
 }

@@ -17,6 +17,7 @@ for check.StringSlice allowed values are:
 
 for check.String allowed values are:
     And(check.String ...)
+    Equals(string)
     HasPrefix(string)
     HasSuffix(string)
     LenBetween(int, int)

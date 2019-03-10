@@ -22,6 +22,7 @@ var mapOfNameToArgMaps = map[string]map[string]string{
 		"LenGT":          "int",
 		"LenLT":          "int",
 		"LenBetween":     "int, int",
+		"Equals":         "string",
 		"HasPrefix":      "string",
 		"HasSuffix":      "string",
 		"MatchesPattern": "regexp, string",
