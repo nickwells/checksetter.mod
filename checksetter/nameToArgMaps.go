@@ -13,6 +13,7 @@ var mapOfNameToArgMaps = map[string]map[string]string{
 		"LenLT":      "int",
 		"LenBetween": "int, int",
 		"String":     strCFName,
+		"Contains":   strCFName + ", string",
 		"Not":        strSlcCFName + ", string",
 		"And":        strSlcCFName + " ...",
 		"Or":         strSlcCFName + " ...",

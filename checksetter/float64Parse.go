@@ -13,6 +13,19 @@ const (
 	float64CFDesc = "float check func"
 )
 
+type float64CFMaker func(*ast.CallExpr, string) (check.Float64, error)
+
+var float64CFArgsToFunc map[string]float64CFMaker
+
+func init() {
+	float64CFArgsToFunc = map[string]float64CFMaker{
+		"float":                    makeFloat64CFFloat,
+		"float, float":             makeFloat64CFFloatFloat,
+		float64CFName + ", string": makeFloat64CFFloat64CFStr,
+		float64CFName + " ...":     makeFloat64CFFloat64CFList,
+	}
+}
+
 var float64CFFloat = map[string]func(float64) check.Float64{
 	"GT": check.Float64GT,
 	"GE": check.Float64GE,
@@ -207,17 +220,12 @@ func float64CFParse(s string) ([]check.Float64, error) {
 
 // getFuncFloat64CF will process the expression and return a Float64 checker or
 // nil
-func getFuncFloat64CF(elt ast.Expr) (check.Float64, error) {
-	switch e := elt.(type) {
-	case *ast.CallExpr:
-		return callFloat64CFMaker(e)
+func getFuncFloat64CF(elt ast.Expr) (cf check.Float64, err error) {
+	e, ok := elt.(*ast.CallExpr)
+	if !ok {
+		return nil, fmt.Errorf("unexpected type: %T", elt)
 	}
-	return nil, fmt.Errorf("unexpected type: %T", elt)
-}
 
-// callFloat64CFMaker calls the appropriate makeFloat64CF... and returns the
-// results
-func callFloat64CFMaker(e *ast.CallExpr) (cf check.Float64, err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			cf = nil

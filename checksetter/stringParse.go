@@ -14,6 +14,21 @@ const (
 	strCFDesc = "string check func"
 )
 
+type strCFMaker func(*ast.CallExpr, string) (check.String, error)
+
+var strCFArgsToFunc map[string]strCFMaker
+
+func init() {
+	strCFArgsToFunc = map[string]strCFMaker{
+		"int":                  makeStrCFInt,
+		"int, int":             makeStrCFIntInt,
+		"regexp, string":       makeStrCFREStr,
+		"string":               makeStrCFStr,
+		strCFName + ", string": makeStrCFStrCFStr,
+		strCFName + " ...":     makeStrCFStrCFList,
+	}
+}
+
 var strCFInt = map[string]func(int) check.String{
 	"LenEQ": check.StringLenEQ,
 	"LenGT": check.StringLenGT,
@@ -289,37 +304,29 @@ func stringCFParse(s string) ([]check.String, error) {
 
 // getFuncStrCF will process the expression and return a string checker or
 // nil
-func getFuncStrCF(elt ast.Expr) (check.String, error) {
-	switch e := elt.(type) {
-	case *ast.CallExpr:
-		return callStrCFMaker(e)
+func getFuncStrCF(elt ast.Expr) (cf check.String, err error) {
+	e, ok := elt.(*ast.CallExpr)
+	if !ok {
+		return nil, fmt.Errorf("unexpected type: %T", elt)
 	}
-	return nil, fmt.Errorf("unexpected type: %T", elt)
-}
 
-// callStrCFMaker calls the appropriate makeStrCF... and returns the
-// results
-func callStrCFMaker(e *ast.CallExpr) (cf check.String, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			cf = nil
+			err = fmt.Errorf("Cannot create the %s func: %v", strCFName, r)
+		}
+	}()
+
 	fd, err := getFuncDetails(e, strCFName)
 	if err != nil {
 		return nil, err
 	}
 
-	switch fd.expectedArgs {
-	case "int":
-		return makeStrCFInt(e, fd.name)
-	case "int, int":
-		return makeStrCFIntInt(e, fd.name)
-	case "string":
-		return makeStrCFStr(e, fd.name)
-	case "regexp, string":
-		return makeStrCFREStr(e, fd.name)
-	case strCFName + ", string":
-		return makeStrCFStrCFStr(e, fd.name)
-	case strCFName + " ...":
-		return makeStrCFStrCFList(e, fd.name)
-	default:
-		return nil, fmt.Errorf("%s has an unexpected argument list: %s",
+	makeF, ok := strCFArgsToFunc[fd.expectedArgs]
+	if ok {
+		return makeF(e, fd.name)
+	} else {
+		return nil, fmt.Errorf("%s has an unrecognised argument list: %s",
 			fd.name, fd.expectedArgs)
 	}
 }

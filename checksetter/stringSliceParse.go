@@ -13,6 +13,22 @@ const (
 	strSlcCFDesc = "string slice check func"
 )
 
+type strSlcCFMaker func(*ast.CallExpr, string) (check.StringSlice, error)
+
+var strSlcCFArgsToFunc map[string]strSlcCFMaker
+
+func init() {
+	strSlcCFArgsToFunc = map[string]strSlcCFMaker{
+		"":                        makeStrSlcCF,
+		"int":                     makeStrSlcCFInt,
+		"int, int":                makeStrSlcCFIntInt,
+		strCFName:                 makeStrSlcCFStrCF,
+		strCFName + ", string":    makeStrSlcCFStrCFStr,
+		strSlcCFName + ", string": makeStrSlcCFStrSlcCFStr,
+		strSlcCFName + " ...":     makeStrSlcCFStrSlcCFList,
+	}
+}
+
 var strSlcCFNoParam = map[string]check.StringSlice{
 	"NoDups": check.StringSliceNoDups,
 }
@@ -28,6 +44,10 @@ var strSlcCFIntInt = map[string]func(int, int) check.StringSlice{
 
 var strSlcCFStrCF = map[string]func(check.String) check.StringSlice{
 	"String": check.StringSliceStringCheck,
+}
+
+var strSlcCFStrCFStr = map[string]func(check.String, string) check.StringSlice{
+	"Contains": check.StringSliceContains,
 }
 
 var strSlcCFStrSlcCFStr = map[string]func(check.StringSlice, string) check.StringSlice{
@@ -150,6 +170,48 @@ func makeStrSlcCFStrCF(e *ast.CallExpr, fName string) (cf check.StringSlice, err
 	return nil, fmt.Errorf("%s the name is not recognised", errIntro)
 }
 
+// makeStrSlcCFStrCFStr returns a StringSlice checker corresponding to the
+// given name - this is for checkers that take a string check parameter and a
+// string
+func makeStrSlcCFStrCFStr(e *ast.CallExpr, fName string) (cf check.StringSlice, err error) {
+	var s string
+	errIntro := func() string {
+		return fmt.Sprintf("can't make the %s func: %s(%s, %s):",
+			strSlcCFName, fName, strCFName, s)
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			cf = nil
+			err = fmt.Errorf("%s %v", errIntro(), r)
+		}
+	}()
+
+	if err = checkArgCount(e, 2); err != nil {
+		return nil, fmt.Errorf("%s %s", errIntro(), err)
+	}
+
+	argExpr, err := getArg(e, 0)
+	if err != nil {
+		return nil, fmt.Errorf("%s can't get the %s argument: %s",
+			errIntro(), strCFName, err)
+	}
+	scf, err := getFuncStrCF(argExpr)
+	if err != nil {
+		return nil, fmt.Errorf("%s can't convert argument %d to %s: %s",
+			errIntro(), 0, strCFName, err)
+	}
+	s, err = getArgAsString(e, 1)
+	if err != nil {
+		return nil, fmt.Errorf("%s %s", errIntro(), err)
+	}
+
+	if f, ok := strSlcCFStrCFStr[fName]; ok {
+		return f(scf, s), nil
+	}
+
+	return nil, fmt.Errorf("%s the name is not recognised", errIntro())
+}
+
 // makeStrSlcCFStrSlcCFStr returns a StringSlice checker corresponding to the
 // given name - this is for checkers that take a string slice check func and
 // a string
@@ -256,19 +318,15 @@ func stringSliceCFParse(s string) ([]check.StringSlice, error) {
 
 // getFuncStrSlcCF will process the expression and return a string slice
 // checker or nil
-func getFuncStrSlcCF(elt ast.Expr) (check.StringSlice, error) {
-	switch e := elt.(type) {
-	case *ast.CallExpr:
-		return callStrSlcCFMaker(e)
-	case *ast.Ident:
-		return makeStrSlcCF((*ast.CallExpr)(nil), e.Name)
+func getFuncStrSlcCF(elt ast.Expr) (cf check.StringSlice, err error) {
+	e, ok := elt.(*ast.CallExpr)
+	if !ok {
+		if eIdent, ok := elt.(*ast.Ident); ok {
+			return makeStrSlcCF((*ast.CallExpr)(nil), eIdent.Name)
+		}
+		return nil, fmt.Errorf("unexpected type: %T", elt)
 	}
-	return nil, fmt.Errorf("unexpected type: %T", elt)
-}
 
-// callStrSlcCFMaker calls the appropriate makeStrSlcCF... and returns the
-// results
-func callStrSlcCFMaker(e *ast.CallExpr) (cf check.StringSlice, err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			cf = nil
@@ -281,21 +339,11 @@ func callStrSlcCFMaker(e *ast.CallExpr) (cf check.StringSlice, err error) {
 		return nil, err
 	}
 
-	switch fd.expectedArgs {
-	case "":
-		return makeStrSlcCF(e, fd.name)
-	case "int":
-		return makeStrSlcCFInt(e, fd.name)
-	case "int, int":
-		return makeStrSlcCFIntInt(e, fd.name)
-	case strCFName:
-		return makeStrSlcCFStrCF(e, fd.name)
-	case strSlcCFName + ", string":
-		return makeStrSlcCFStrSlcCFStr(e, fd.name)
-	case strSlcCFName + " ...":
-		return makeStrSlcCFStrSlcCFList(e, fd.name)
-	default:
-		return nil, fmt.Errorf("%s has an unexpected argument list: %s",
+	makeF, ok := strSlcCFArgsToFunc[fd.expectedArgs]
+	if ok {
+		return makeF(e, fd.name)
+	} else {
+		return nil, fmt.Errorf("%s has an unrecognised argument list: %s",
 			fd.name, fd.expectedArgs)
 	}
 }

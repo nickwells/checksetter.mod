@@ -13,6 +13,19 @@ const (
 	int64CFDesc = "int check func"
 )
 
+type int64CFMaker func(*ast.CallExpr, string) (check.Int64, error)
+
+var int64CFArgsToFunc map[string]int64CFMaker
+
+func init() {
+	int64CFArgsToFunc = map[string]int64CFMaker{
+		"int":                    makeInt64CFInt,
+		"int, int":               makeInt64CFIntInt,
+		int64CFName + ", string": makeInt64CFInt64CFStr,
+		int64CFName + " ...":     makeInt64CFInt64CFList,
+	}
+}
+
 var int64CFInt = map[string]func(int64) check.Int64{
 	"EQ":          check.Int64EQ,
 	"GT":          check.Int64GT,
@@ -208,17 +221,12 @@ func int64CFParse(s string) ([]check.Int64, error) {
 
 // getFuncInt64CF will process the expression and return an Int64 checker or
 // nil
-func getFuncInt64CF(elt ast.Expr) (check.Int64, error) {
-	switch e := elt.(type) {
-	case *ast.CallExpr:
-		return callInt64CFMaker(e)
+func getFuncInt64CF(elt ast.Expr) (cf check.Int64, err error) {
+	e, ok := elt.(*ast.CallExpr)
+	if !ok {
+		return nil, fmt.Errorf("unexpected type: %T", elt)
 	}
-	return nil, fmt.Errorf("unexpected type: %T", elt)
-}
 
-// callInt64CFMaker calls the appropriate makeInt64CF... and returns the
-// results
-func callInt64CFMaker(e *ast.CallExpr) (cf check.Int64, err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			cf = nil
@@ -231,17 +239,11 @@ func callInt64CFMaker(e *ast.CallExpr) (cf check.Int64, err error) {
 		return nil, err
 	}
 
-	switch fd.expectedArgs {
-	case "int":
-		return makeInt64CFInt(e, fd.name)
-	case "int, int":
-		return makeInt64CFIntInt(e, fd.name)
-	case int64CFName + ", string":
-		return makeInt64CFInt64CFStr(e, fd.name)
-	case int64CFName + " ...":
-		return makeInt64CFInt64CFList(e, fd.name)
-	default:
-		return nil, fmt.Errorf("%s has an unexpected argument list: %s",
+	makeF, ok := int64CFArgsToFunc[fd.expectedArgs]
+	if ok {
+		return makeF(e, fd.name)
+	} else {
+		return nil, fmt.Errorf("%s has an unrecognised argument list: %s",
 			fd.name, fd.expectedArgs)
 	}
 }

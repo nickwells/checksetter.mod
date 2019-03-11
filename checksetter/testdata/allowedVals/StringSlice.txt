@@ -5,6 +5,7 @@ Write the checks as if you were writing code.
 The functions recognised are:
 for check.StringSlice allowed values are:
     And(check.StringSlice ...)
+    Contains(check.String, string)
     LenBetween(int, int)
     LenEQ(int)
     LenGT(int)
