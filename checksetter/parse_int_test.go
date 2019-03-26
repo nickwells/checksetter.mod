@@ -1,7 +1,6 @@
 package checksetter
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/nickwells/testhelper.mod/testhelper"
@@ -9,121 +8,116 @@ import (
 
 // parseTestInfo holds details of parse tests
 type parseTestInfo struct {
-	name             string
-	s                string
-	parser           string
-	lenExpected      int
-	errExpected      bool
-	errShouldContain []string
+	testhelper.ID
+	testhelper.ExpErr
+	s           string
+	parser      string
+	lenExpected int
 }
 
 func TestParse(t *testing.T) {
 	testCases := []parseTestInfo{
 		{
-			name:        "good - 1 check",
+			ID:          testhelper.MkID("good - 1 check"),
 			s:           `GT(5)`,
 			parser:      "int64",
 			lenExpected: 1,
 		},
 		{
-			name:        "good - 2 checks",
+			ID:          testhelper.MkID("good - 2 checks"),
 			s:           `GT(5), LT(9)`,
 			parser:      "int64",
 			lenExpected: 2,
 		},
 		{
-			name:        "good - 1 check",
+			ID:          testhelper.MkID("good - 1 check"),
 			s:           `GT(5.0)`,
 			parser:      "float64",
 			lenExpected: 1,
 		},
 		{
-			name:        "good - 2 checks",
+			ID:          testhelper.MkID("good - 2 checks"),
 			s:           `GT(5.0), LT(9.0)`,
 			parser:      "float64",
 			lenExpected: 2,
 		},
 		{
-			name:        "good - 1 check",
+			ID:          testhelper.MkID("good - 1 check"),
 			s:           `LenGT(5)`,
 			parser:      "string",
 			lenExpected: 1,
 		},
 		{
-			name:        "good - 2 checks",
+			ID:          testhelper.MkID("good - 2 checks"),
 			s:           `LenGT(5), LenLT(9)`,
 			parser:      "string",
 			lenExpected: 2,
 		},
 		{
-			name:        "good - 1 check",
+			ID:          testhelper.MkID("good - 1 check"),
 			s:           `LenGT(5)`,
 			parser:      "stringSlice",
 			lenExpected: 1,
 		},
 		{
-			name:        "good - 2 checks",
+			ID:          testhelper.MkID("good - 2 checks"),
 			s:           `LenGT(5), LenLT(9)`,
 			parser:      "stringSlice",
 			lenExpected: 2,
 		},
 		{
-			name:             "bad - syntax: ,,",
-			s:                `,,`,
-			parser:           "all",
-			errExpected:      true,
-			errShouldContain: []string{"expected operand, found ','"},
+			ID:     testhelper.MkID("bad - syntax: ,,"),
+			s:      `,,`,
+			parser: "all",
+			ExpErr: testhelper.MkExpErr("expected operand, found ','"),
 		},
 		{
-			name:             "bad - syntax: }",
-			s:                `}`,
-			parser:           "all",
-			errExpected:      true,
-			errShouldContain: []string{"expected 'EOF', found '}'"},
+			ID:     testhelper.MkID("bad - syntax: }"),
+			s:      `}`,
+			parser: "all",
+			ExpErr: testhelper.MkExpErr("expected 'EOF', found '}'"),
 		},
 		{
-			name:             "bad - syntax: {",
-			s:                `{`,
-			parser:           "all",
-			errExpected:      true,
-			errShouldContain: []string{"missing ',' before newline in composite literal"},
+			ID:     testhelper.MkID("bad - syntax: {"),
+			s:      `{`,
+			parser: "all",
+			ExpErr: testhelper.MkExpErr(
+				"missing ',' before newline in composite literal"),
 		},
 		{
-			name:             "bad - syntax: {}",
-			s:                `{}`,
-			parser:           "all",
-			errExpected:      true,
-			errShouldContain: []string{"bad function: unexpected type: *ast.CompositeLit"},
+			ID:     testhelper.MkID("bad - syntax: {}"),
+			s:      `{}`,
+			parser: "all",
+			ExpErr: testhelper.MkExpErr(
+				"bad function: unexpected type: *ast.CompositeLit"),
 		},
 	}
 
-	for i, tc := range testCases {
+	for _, tc := range testCases {
 		if tc.parser == "int64" || tc.parser == "all" {
 			slc, err := int64CFParse(tc.s)
-			checkParseResults(t, i, len(slc), err, tc)
+			checkParseResults(t, len(slc), err, tc)
 		}
 		if tc.parser == "float64" || tc.parser == "all" {
 			slc, err := float64CFParse(tc.s)
-			checkParseResults(t, i, len(slc), err, tc)
+			checkParseResults(t, len(slc), err, tc)
 		}
 		if tc.parser == "string" || tc.parser == "all" {
 			slc, err := stringCFParse(tc.s)
-			checkParseResults(t, i, len(slc), err, tc)
+			checkParseResults(t, len(slc), err, tc)
 		}
 		if tc.parser == "stringSlice" || tc.parser == "all" {
 			slc, err := stringSliceCFParse(tc.s)
-			checkParseResults(t, i, len(slc), err, tc)
+			checkParseResults(t, len(slc), err, tc)
 		}
 	}
 }
 
-// checkParseResults ...
-func checkParseResults(t *testing.T, tNum int, slcLen int, err error, tc parseTestInfo) {
-	tcID := fmt.Sprintf("test %d: %s", tNum, tc.name)
-	if testhelper.CheckError(t, tcID, err,
-		tc.errExpected, tc.errShouldContain) && err == nil {
+// checkParseResults checks that the results of parsing are as expected
+func checkParseResults(t *testing.T, slcLen int, err error, tc parseTestInfo) {
+	if testhelper.CheckExpErr(t, err, tc) && err == nil {
 		if slcLen != tc.lenExpected {
-			t.Log(tcID)
+			t.Log(tc.IDStr())
 			t.Logf("\t: expected: %d", tc.lenExpected)
 			t.Logf("\t:      got: %d", slcLen)
 			t.Errorf("\t: unexpected number of checks\n")

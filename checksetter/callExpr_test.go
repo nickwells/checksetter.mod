@@ -1,7 +1,6 @@
 package checksetter
 
 import (
-	"fmt"
 	"go/ast"
 	"go/parser"
 	"testing"
@@ -32,60 +31,52 @@ func TestCheckArgCount(t *testing.T) {
 	}
 
 	testCases := []struct {
-		name             string
-		ce               *ast.CallExpr
-		n                int
-		errExpected      bool
-		errShouldContain []string
+		testhelper.ID
+		testhelper.ExpErr
+		ce *ast.CallExpr
+		n  int
 	}{
 		{
-			name: "good - 0 params",
-			ce:   callExprs[0].ce,
-			n:    0,
+			ID: testhelper.MkID("good - 0 params"),
+			ce: callExprs[0].ce,
+			n:  0,
 		},
 		{
-			name:        "bad - 0 params",
-			ce:          callExprs[0].ce,
-			n:           99,
-			errExpected: true,
-			errShouldContain: []string{
-				"the call has 0 arguments, it should have 99",
-			},
+			ID: testhelper.MkID("bad - 0 params"),
+			ce: callExprs[0].ce,
+			n:  99,
+			ExpErr: testhelper.MkExpErr(
+				"the call has 0 arguments, it should have 99"),
 		},
 		{
-			name: "good - 1 params",
-			ce:   callExprs[1].ce,
-			n:    1,
+			ID: testhelper.MkID("good - 1 params"),
+			ce: callExprs[1].ce,
+			n:  1,
 		},
 		{
-			name:        "bad - 1 params",
-			ce:          callExprs[1].ce,
-			n:           99,
-			errExpected: true,
-			errShouldContain: []string{
-				"the call has 1 arguments, it should have 99",
-			},
+			ID: testhelper.MkID("bad - 1 params"),
+			ce: callExprs[1].ce,
+			n:  99,
+			ExpErr: testhelper.MkExpErr(
+				"the call has 1 arguments, it should have 99"),
 		},
 		{
-			name: "good - 2 params",
-			ce:   callExprs[2].ce,
-			n:    2,
+			ID: testhelper.MkID("good - 2 params"),
+			ce: callExprs[2].ce,
+			n:  2,
 		},
 		{
-			name:        "bad - 2 params",
-			ce:          callExprs[2].ce,
-			n:           99,
-			errExpected: true,
-			errShouldContain: []string{
-				"the call has 2 arguments, it should have 99",
-			},
+			ID: testhelper.MkID("bad - 2 params"),
+			ce: callExprs[2].ce,
+			n:  99,
+			ExpErr: testhelper.MkExpErr(
+				"the call has 2 arguments, it should have 99"),
 		},
 	}
 
-	for i, tc := range testCases {
-		tcID := fmt.Sprintf("test %d: %s", i, tc.name)
+	for _, tc := range testCases {
 		err := checkArgCount(tc.ce, tc.n)
-		testhelper.CheckError(t, tcID, err, tc.errExpected, tc.errShouldContain)
+		testhelper.CheckExpErr(t, err, tc)
 	}
 }
 
@@ -112,79 +103,66 @@ func TestGetArg(t *testing.T) {
 	}
 
 	testCases := []struct {
-		name             string
-		ce               *ast.CallExpr
-		n                int
-		errExpected      bool
-		errShouldContain []string
+		testhelper.ID
+		testhelper.ExpErr
+		ce *ast.CallExpr
+		n  int
 	}{
 		{
-			name:        "bad - 0 params, get with idx: 0",
-			ce:          callExprs[0].ce,
-			n:           0,
-			errExpected: true,
-			errShouldContain: []string{
-				"can't get argument 0, too few parameters",
-			},
+			ID: testhelper.MkID("bad - 0 params, get with idx: 0"),
+			ce: callExprs[0].ce,
+			n:  0,
+			ExpErr: testhelper.MkExpErr(
+				"can't get argument 0, too few parameters"),
 		},
 		{
-			name:        "bad - 0 params, get with idx: 1",
-			ce:          callExprs[0].ce,
-			n:           1,
-			errExpected: true,
-			errShouldContain: []string{
-				"can't get argument 1, too few parameters",
-			},
+			ID: testhelper.MkID("bad - 0 params, get with idx: 1"),
+			ce: callExprs[0].ce,
+			n:  1,
+			ExpErr: testhelper.MkExpErr(
+				"can't get argument 1, too few parameters"),
 		},
 		{
-			name: "good - 1 params, get with idx: 0",
-			ce:   callExprs[1].ce,
-			n:    0,
+			ID: testhelper.MkID("good - 1 params, get with idx: 0"),
+			ce: callExprs[1].ce,
+			n:  0,
 		},
 		{
-			name:        "bad - 1 params, get with idx: 1",
-			ce:          callExprs[1].ce,
-			n:           1,
-			errExpected: true,
-			errShouldContain: []string{
-				"can't get argument 1, too few parameters",
-			},
+			ID: testhelper.MkID("bad - 1 params, get with idx: 1"),
+			ce: callExprs[1].ce,
+			n:  1,
+			ExpErr: testhelper.MkExpErr(
+				"can't get argument 1, too few parameters"),
 		},
 		{
-			name: "good - 2 params, get with idx: 0",
-			ce:   callExprs[2].ce,
-			n:    0,
+			ID: testhelper.MkID("good - 2 params, get with idx: 0"),
+			ce: callExprs[2].ce,
+			n:  0,
 		},
 		{
-			name: "good - 2 params, get with idx: 1",
-			ce:   callExprs[2].ce,
-			n:    1,
+			ID: testhelper.MkID("good - 2 params, get with idx: 1"),
+			ce: callExprs[2].ce,
+			n:  1,
 		},
 		{
-			name:        "bad - 2 params, get with idx: 2",
-			ce:          callExprs[2].ce,
-			n:           2,
-			errExpected: true,
-			errShouldContain: []string{
-				"can't get argument 2, too few parameters",
-			},
+			ID: testhelper.MkID("bad - 2 params, get with idx: 2"),
+			ce: callExprs[2].ce,
+			n:  2,
+			ExpErr: testhelper.MkExpErr(
+				"can't get argument 2, too few parameters"),
 		},
 		{
-			name:        "bad - 2 params, get with idx: 99",
-			ce:          callExprs[2].ce,
-			n:           99,
-			errExpected: true,
-			errShouldContain: []string{
-				"can't get argument 99, too few parameters",
-			},
+			ID: testhelper.MkID("bad - 2 params, get with idx: 99"),
+			ce: callExprs[2].ce,
+			n:  99,
+			ExpErr: testhelper.MkExpErr(
+				"can't get argument 99, too few parameters"),
 		},
 	}
 
-	for i, tc := range testCases {
-		tcID := fmt.Sprintf("test %d: %s", i, tc.name)
-
+	for _, tc := range testCases {
 		_, err := getArg(tc.ce, tc.n)
-		testhelper.CheckError(t, tcID, err, tc.errExpected, tc.errShouldContain)
+		testhelper.CheckExpErr(t, err, tc)
 	}
 }
 
@@ -210,73 +188,61 @@ func TestGetArgAsInt(t *testing.T) {
 	}
 
 	testCases := []struct {
-		name             string
-		ce               *ast.CallExpr
-		n                int
-		expVal           int64
-		errExpected      bool
-		errShouldContain []string
+		testhelper.ID
+		testhelper.ExpErr
+		ce     *ast.CallExpr
+		n      int
+		expVal int64
 	}{
 		{
-			name:   "good - 1 params, get with idx: 0",
+			ID:     testhelper.MkID("good - 1 params, get with idx: 0"),
 			ce:     callExprs[0].ce,
 			n:      0,
 			expVal: 1,
 		},
 		{
-			name:        "bad - 1 params, get with idx: 1",
-			ce:          callExprs[0].ce,
-			n:           1,
-			errExpected: true,
-			errShouldContain: []string{
-				"can't get argument 1, too few parameters",
-			},
+			ID: testhelper.MkID("bad - 1 params, get with idx: 1"),
+			ce: callExprs[0].ce,
+			n:  1,
+			ExpErr: testhelper.MkExpErr(
+				"can't get argument 1, too few parameters"),
 		},
 		{
-			name:   "good - 2 params, get with idx: 0",
+			ID:     testhelper.MkID("good - 2 params, get with idx: 0"),
 			ce:     callExprs[1].ce,
 			n:      0,
 			expVal: 1,
 		},
 		{
-			name:        "bad - 2 params, get with idx: 1 - not an int",
-			ce:          callExprs[1].ce,
-			n:           1,
-			errExpected: true,
-			errShouldContain: []string{
+			ID: testhelper.MkID("bad - 2 params, get with idx: 1 - not an int"),
+			ce: callExprs[1].ce,
+			n:  1,
+			ExpErr: testhelper.MkExpErr(
 				"can't convert argument 1 to an int:",
-				" the expression should have been a literal INT, was STRING",
-			},
+				" the expression should have been a literal INT, was STRING"),
 		},
 		{
-			name:        "bad - 2 params, get with idx: 2",
-			ce:          callExprs[1].ce,
-			n:           2,
-			errExpected: true,
-			errShouldContain: []string{
-				"can't get argument 2, too few parameters",
-			},
+			ID: testhelper.MkID("bad - 2 params, get with idx: 2"),
+			ce: callExprs[1].ce,
+			n:  2,
+			ExpErr: testhelper.MkExpErr(
+				"can't get argument 2, too few parameters"),
 		},
 		{
-			name:        "bad - 2 params, get with idx: 99",
-			ce:          callExprs[1].ce,
-			n:           99,
-			errExpected: true,
-			errShouldContain: []string{
-				"can't get argument 99, too few parameters",
-			},
+			ID: testhelper.MkID("bad - 2 params, get with idx: 99"),
+			ce: callExprs[1].ce,
+			n:  99,
+			ExpErr: testhelper.MkExpErr(
+				"can't get argument 99, too few parameters"),
 		},
 	}
 
-	for i, tc := range testCases {
-		tcID := fmt.Sprintf("test %d: %s", i, tc.name)
-
+	for _, tc := range testCases {
 		val, err := getArgAsInt(tc.ce, tc.n)
-		if testhelper.CheckError(t, tcID, err,
-			tc.errExpected, tc.errShouldContain) &&
+		if testhelper.CheckExpErr(t, err, tc) &&
 			err == nil {
 			if val != tc.expVal {
-				t.Log(tcID)
+				t.Log(tc.IDStr())
 				t.Logf("\t: expected: %d", tc.expVal)
 				t.Logf("\t:      got: %d", val)
 				t.Error("\t: unexpected value")
@@ -307,73 +273,61 @@ func TestGetArgAsFloat(t *testing.T) {
 	}
 
 	testCases := []struct {
-		name             string
-		ce               *ast.CallExpr
-		n                int
-		expVal           float64
-		errExpected      bool
-		errShouldContain []string
+		testhelper.ID
+		testhelper.ExpErr
+		ce     *ast.CallExpr
+		n      int
+		expVal float64
 	}{
 		{
-			name:   "good - 1 params, get with idx: 0",
+			ID:     testhelper.MkID("good - 1 params, get with idx: 0"),
 			ce:     callExprs[0].ce,
 			n:      0,
 			expVal: 1.1,
 		},
 		{
-			name:        "bad - 1 params, get with idx: 1",
-			ce:          callExprs[0].ce,
-			n:           1,
-			errExpected: true,
-			errShouldContain: []string{
-				"can't get argument 1, too few parameters",
-			},
+			ID: testhelper.MkID("bad - 1 params, get with idx: 1"),
+			ce: callExprs[0].ce,
+			n:  1,
+			ExpErr: testhelper.MkExpErr(
+				"can't get argument 1, too few parameters"),
 		},
 		{
-			name:   "good - 2 params, get with idx: 0",
+			ID:     testhelper.MkID("good - 2 params, get with idx: 0"),
 			ce:     callExprs[1].ce,
 			n:      0,
 			expVal: 1.1,
 		},
 		{
-			name:        "bad - 2 params, get with idx: 1 - not a float",
-			ce:          callExprs[1].ce,
-			n:           1,
-			errExpected: true,
-			errShouldContain: []string{
+			ID: testhelper.MkID("bad - 2 params, get with idx: 1 - not a float"),
+			ce: callExprs[1].ce,
+			n:  1,
+			ExpErr: testhelper.MkExpErr(
 				"can't convert argument 1 to a float:",
-				" the expression should have been a literal FLOAT, was STRING",
-			},
+				" the expression should have been a literal FLOAT, was STRING"),
 		},
 		{
-			name:        "bad - 2 params, get with idx: 2",
-			ce:          callExprs[1].ce,
-			n:           2,
-			errExpected: true,
-			errShouldContain: []string{
-				"can't get argument 2, too few parameters",
-			},
+			ID: testhelper.MkID("bad - 2 params, get with idx: 2"),
+			ce: callExprs[1].ce,
+			n:  2,
+			ExpErr: testhelper.MkExpErr(
+				"can't get argument 2, too few parameters"),
 		},
 		{
-			name:        "bad - 2 params, get with idx: 99",
-			ce:          callExprs[1].ce,
-			n:           99,
-			errExpected: true,
-			errShouldContain: []string{
-				"can't get argument 99, too few parameters",
-			},
+			ID: testhelper.MkID("bad - 2 params, get with idx: 99"),
+			ce: callExprs[1].ce,
+			n:  99,
+			ExpErr: testhelper.MkExpErr(
+				"can't get argument 99, too few parameters"),
 		},
 	}
 
-	for i, tc := range testCases {
-		tcID := fmt.Sprintf("test %d: %s", i, tc.name)
-
+	for _, tc := range testCases {
 		val, err := getArgAsFloat(tc.ce, tc.n)
-		if testhelper.CheckError(t, tcID, err,
-			tc.errExpected, tc.errShouldContain) &&
+		if testhelper.CheckExpErr(t, err, tc) &&
 			err == nil {
 			if val != tc.expVal {
-				t.Log(tcID)
+				t.Log(tc.IDStr())
 				t.Logf("\t: expected: %f", tc.expVal)
 				t.Logf("\t:      got: %f", val)
 				t.Error("\t: unexpected value")
