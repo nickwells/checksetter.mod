@@ -14,6 +14,7 @@ for check.StringSlice allowed values are:
     Not(check.StringSlice, string)
     Or(check.StringSlice ...)
     String(check.String)
+    StringCheckByPos(check.String ...)
 
 
 for check.String allowed values are:
@@ -27,5 +28,6 @@ for check.String allowed values are:
     LenLT(int)
     MatchesPattern(regexp, string)
     Not(check.String, string)
+    OK
     Or(check.String ...)
 

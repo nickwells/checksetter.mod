@@ -14,5 +14,6 @@ for check.String allowed values are:
     LenLT(int)
     MatchesPattern(regexp, string)
     Not(check.String, string)
+    OK
     Or(check.String ...)
 

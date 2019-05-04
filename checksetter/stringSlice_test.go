@@ -24,6 +24,23 @@ func TestChkStringSlice(t *testing.T) {
 		},
 		{
 			ID: testhelper.MkID(
+				"ok - one check function (no params), slice ok"),
+			arg:       "NoDups()",
+			ssToCheck: []string{"one", "two"},
+		},
+		{
+			ID: testhelper.MkID(
+				"ok - one check function (no params), param given"),
+			arg:       "NoDups(1)",
+			ssToCheck: []string{"one", "two"},
+			ExpErr: testhelper.MkExpErr(
+				"bad function",
+				"can't make the check.StringSlice func:",
+				"the call has 1 arguments, it should have 0",
+			),
+		},
+		{
+			ID: testhelper.MkID(
 				"ok - one check function (one int param), slice ok"),
 			arg:       "LenEQ(2)",
 			ssToCheck: []string{"one", "two"},
@@ -70,6 +87,12 @@ func TestChkStringSlice(t *testing.T) {
 				"can't make the check.StringSlice func: ",
 				"Impossible checks passed to StringSliceLenBetween",
 			),
+		},
+		{
+			ID: testhelper.MkID(
+				"ok - one check function (check.String list)"),
+			arg:       `StringCheckByPos(Equals("RC"), MatchesPattern("[1-9][0-9]*", "numeric"))`,
+			ssToCheck: []string{"RC", "9"},
 		},
 	}
 
