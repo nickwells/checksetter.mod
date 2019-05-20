@@ -1,0 +1,33 @@
+a list of check.StringSlice functions separated by ','.
+
+Write the checks as if you were writing code.
+
+The functions recognised are:
+for check.StringSlice allowed values are:
+    And(check.StringSlice ...)
+    Contains(check.String, string)
+    LenBetween(int, int)
+    LenEQ(int)
+    LenGT(int)
+    LenLT(int)
+    NoDups
+    Not(check.StringSlice, string)
+    Or(check.StringSlice ...)
+    String(check.String)
+    StringCheckByPos(check.String ...)
+
+
+for check.String allowed values are:
+    And(check.String ...)
+    Equals(string)
+    HasPrefix(string)
+    HasSuffix(string)
+    LenBetween(int, int)
+    LenEQ(int)
+    LenGT(int)
+    LenLT(int)
+    MatchesPattern(regexp, string)
+    Not(check.String, string)
+    OK
+    Or(check.String ...)
+
