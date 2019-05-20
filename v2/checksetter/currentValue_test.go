@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/nickwells/check.mod/check"
-	"github.com/nickwells/checksetter.mod/checksetter"
+	"github.com/nickwells/checksetter.mod/v2/checksetter"
 )
 
 func TestCurrentValueStringSlice(t *testing.T) {
