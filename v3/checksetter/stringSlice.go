@@ -2,15 +2,14 @@ package checksetter
 
 import (
 	"github.com/nickwells/check.mod/check"
-	"github.com/nickwells/param.mod/v3/param"
-	"github.com/nickwells/param.mod/v3/param/psetter"
+	"github.com/nickwells/param.mod/v4/param"
+	"github.com/nickwells/param.mod/v4/param/psetter"
 )
 
 // StringSlice can be used to set a list of checkers for a slice of
 // strings.
 type StringSlice struct {
 	param.ValueReqMandatory
-	param.NilAVM
 
 	Value *[]check.StringSlice
 }

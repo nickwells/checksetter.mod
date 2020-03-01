@@ -2,14 +2,13 @@ package checksetter
 
 import (
 	"github.com/nickwells/check.mod/check"
-	"github.com/nickwells/param.mod/v3/param"
-	"github.com/nickwells/param.mod/v3/param/psetter"
+	"github.com/nickwells/param.mod/v4/param"
+	"github.com/nickwells/param.mod/v4/param/psetter"
 )
 
 // Int64 can be used to set a list of checkers for an int64.
 type Int64 struct {
 	param.ValueReqMandatory
-	param.NilAVM
 
 	Value *[]check.Int64
 }

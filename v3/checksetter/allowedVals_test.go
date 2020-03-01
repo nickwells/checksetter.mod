@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/nickwells/check.mod/check"
-	"github.com/nickwells/checksetter.mod/v2/checksetter"
+	"github.com/nickwells/checksetter.mod/v3/checksetter"
 	"github.com/nickwells/testhelper.mod/testhelper"
 )
 

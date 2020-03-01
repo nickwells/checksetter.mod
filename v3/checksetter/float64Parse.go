@@ -13,18 +13,18 @@ const (
 	float64CFDesc = "float check func"
 )
 
-type float64CFMaker func(*ast.CallExpr, string) (check.Float64, error)
+// type float64CFMaker func(*ast.CallExpr, string) (check.Float64, error)
 
-var float64CFArgsToFunc map[string]float64CFMaker
+// var float64CFArgsToFunc map[string]float64CFMaker
 
-func init() {
-	float64CFArgsToFunc = map[string]float64CFMaker{
-		"float":                    makeFloat64CFFloat,
-		"float, float":             makeFloat64CFFloatFloat,
-		float64CFName + ", string": makeFloat64CFFloat64CFStr,
-		float64CFName + " ...":     makeFloat64CFFloat64CFList,
-	}
-}
+// func init() {
+// 	float64CFArgsToFunc = map[string]float64CFMaker{
+// 		"float":                    makeFloat64CFFloat,
+// 		"float, float":             makeFloat64CFFloatFloat,
+// 		float64CFName + ", string": makeFloat64CFFloat64CFStr,
+// 		float64CFName + " ...":     makeFloat64CFFloat64CFList,
+// 	}
+// }
 
 var float64CFFloat = map[string]func(float64) check.Float64{
 	"GT": check.Float64GT,

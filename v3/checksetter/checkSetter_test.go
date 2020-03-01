@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/nickwells/check.mod/check"
-	"github.com/nickwells/checksetter.mod/v2/checksetter"
+	"github.com/nickwells/checksetter.mod/v3/checksetter"
 	"github.com/nickwells/testhelper.mod/testhelper"
 )
 
@@ -134,11 +134,11 @@ func TestCheckSetterFloat64(t *testing.T) {
 
 func TestIsASetter(t *testing.T) {
 	setterF := checksetter.Float64{}
-	_ = setterF.AllowedValuesMap()
+	_ = setterF.AllowedValues()
 	setterI := checksetter.Int64{}
-	_ = setterI.AllowedValuesMap()
+	_ = setterI.AllowedValues()
 	setterS := checksetter.String{}
-	_ = setterS.AllowedValuesMap()
+	_ = setterS.AllowedValues()
 	setterSS := checksetter.StringSlice{}
-	_ = setterSS.AllowedValuesMap()
+	_ = setterSS.AllowedValues()
 }
