@@ -13,18 +13,18 @@ const (
 	float64CFDesc = "float check func"
 )
 
-// type float64CFMaker func(*ast.CallExpr, string) (check.Float64, error)
+type float64CFMaker func(*ast.CallExpr, string) (check.Float64, error)
 
-// var float64CFArgsToFunc map[string]float64CFMaker
+var float64CFArgsToFunc map[string]float64CFMaker
 
-// func init() {
-// 	float64CFArgsToFunc = map[string]float64CFMaker{
-// 		"float":                    makeFloat64CFFloat,
-// 		"float, float":             makeFloat64CFFloatFloat,
-// 		float64CFName + ", string": makeFloat64CFFloat64CFStr,
-// 		float64CFName + " ...":     makeFloat64CFFloat64CFList,
-// 	}
-// }
+func init() {
+	float64CFArgsToFunc = map[string]float64CFMaker{
+		"float":                    makeFloat64CFFloat,
+		"float, float":             makeFloat64CFFloatFloat,
+		float64CFName + ", string": makeFloat64CFFloat64CFStr,
+		float64CFName + " ...":     makeFloat64CFFloat64CFList,
+	}
+}
 
 var float64CFFloat = map[string]func(float64) check.Float64{
 	"GT": check.Float64GT,
@@ -238,17 +238,11 @@ func getFuncFloat64CF(elt ast.Expr) (cf check.Float64, err error) {
 		return nil, err
 	}
 
-	switch fd.expectedArgs {
-	case "float":
-		return makeFloat64CFFloat(e, fd.name)
-	case "float, float":
-		return makeFloat64CFFloatFloat(e, fd.name)
-	case float64CFName + ", string":
-		return makeFloat64CFFloat64CFStr(e, fd.name)
-	case float64CFName + " ...":
-		return makeFloat64CFFloat64CFList(e, fd.name)
-	default:
-		return nil, fmt.Errorf("%s has an unexpected argument list: %s",
+	maker, ok := float64CFArgsToFunc[fd.expectedArgs]
+	if !ok {
+		return nil, fmt.Errorf("%s has an unrecognised argument list: %s",
 			fd.name, fd.expectedArgs)
 	}
+
+	return maker(e, fd.name)
 }

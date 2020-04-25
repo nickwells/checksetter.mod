@@ -239,11 +239,11 @@ func getFuncInt64CF(elt ast.Expr) (cf check.Int64, err error) {
 		return nil, err
 	}
 
-	makeF, ok := int64CFArgsToFunc[fd.expectedArgs]
-	if ok {
-		return makeF(e, fd.name)
-	} else {
+	maker, ok := int64CFArgsToFunc[fd.expectedArgs]
+	if !ok {
 		return nil, fmt.Errorf("%s has an unrecognised argument list: %s",
 			fd.name, fd.expectedArgs)
 	}
+
+	return maker(e, fd.name)
 }

@@ -381,11 +381,11 @@ func getFuncStrSlcCF(elt ast.Expr) (cf check.StringSlice, err error) {
 		return nil, err
 	}
 
-	makeF, ok := strSlcCFArgsToFunc[fd.expectedArgs]
-	if ok {
-		return makeF(e, fd.name)
-	} else {
+	maker, ok := strSlcCFArgsToFunc[fd.expectedArgs]
+	if !ok {
 		return nil, fmt.Errorf("%s has an unrecognised argument list: %s",
 			fd.name, fd.expectedArgs)
 	}
+
+	return maker(e, fd.name)
 }
