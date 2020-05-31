@@ -1,7 +1,6 @@
 package checksetter_test
 
 import (
-	"flag"
 	"strings"
 	"testing"
 
@@ -18,10 +17,13 @@ const (
 var aValGFC = testhelper.GoldenFileCfg{
 	DirNames: []string{allowedValsDir, allowedValsSubDir},
 	Sfx:      "txt",
+
+	UpdFlagName: "upd-avals",
 }
 
-var updateAVals = flag.Bool("upd-avals", false,
-	"update the files holding the allowed values messages")
+func init() {
+	aValGFC.AddUpdateFlag()
+}
 
 // avalTNameAbbv returns the abbreviated test name - with a common prefix
 // removed
@@ -36,8 +38,7 @@ func TestAllowedValuesStringSlice(t *testing.T) {
 	val := []byte(setter.AllowedValues())
 	name := avalTNameAbbr(t)
 
-	testhelper.CheckAgainstGoldenFile(t, name, val,
-		aValGFC.PathName(name), *updateAVals)
+	aValGFC.Check(t, name, name, val)
 }
 
 func TestAllowedValuesString(t *testing.T) {
@@ -47,8 +48,7 @@ func TestAllowedValuesString(t *testing.T) {
 	val := []byte(setter.AllowedValues())
 	name := avalTNameAbbr(t)
 
-	testhelper.CheckAgainstGoldenFile(t, name, val,
-		aValGFC.PathName(name), *updateAVals)
+	aValGFC.Check(t, name, name, val)
 }
 
 func TestAllowedValuesInt64(t *testing.T) {
@@ -58,8 +58,7 @@ func TestAllowedValuesInt64(t *testing.T) {
 	val := []byte(setter.AllowedValues())
 	name := avalTNameAbbr(t)
 
-	testhelper.CheckAgainstGoldenFile(t, name, val,
-		aValGFC.PathName(name), *updateAVals)
+	aValGFC.Check(t, name, name, val)
 }
 
 func TestAllowedValuesFloat64(t *testing.T) {
@@ -69,6 +68,5 @@ func TestAllowedValuesFloat64(t *testing.T) {
 	val := []byte(setter.AllowedValues())
 	name := avalTNameAbbr(t)
 
-	testhelper.CheckAgainstGoldenFile(t, name, val,
-		aValGFC.PathName(name), *updateAVals)
+	aValGFC.Check(t, name, name, val)
 }

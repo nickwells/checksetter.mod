@@ -2,13 +2,12 @@ package checksetter
 
 import (
 	"github.com/nickwells/check.mod/check"
-	"github.com/nickwells/param.mod/v4/param"
-	"github.com/nickwells/param.mod/v4/param/psetter"
+	"github.com/nickwells/param.mod/v5/param/psetter"
 )
 
 // Float64 can be used to set a list of checkers for a float64.
 type Float64 struct {
-	param.ValueReqMandatory
+	psetter.ValueReqMandatory
 
 	Value *[]check.Float64
 }
