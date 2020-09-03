@@ -51,12 +51,7 @@ func TestGetInt(t *testing.T) {
 		val, err := getInt(tc.param)
 		if testhelper.CheckExpErr(t, err, tc) &&
 			err == nil {
-			if val != tc.valExpected {
-				t.Log(tc.IDStr())
-				t.Logf("\t: expected: %d\n", tc.valExpected)
-				t.Logf("\t:      got: %d\n", val)
-				t.Errorf("\t: value unexpected\n")
-			}
+			testhelper.DiffInt64(t, tc.IDStr(), "int", val, tc.valExpected)
 		}
 	}
 }
@@ -104,12 +99,8 @@ func TestGetFloat(t *testing.T) {
 		val, err := getFloat(tc.param)
 		if testhelper.CheckExpErr(t, err, tc) &&
 			err == nil {
-			if val != tc.valExpected {
-				t.Log(tc.IDStr())
-				t.Logf("\t: expected: %f\n", tc.valExpected)
-				t.Logf("\t:      got: %f\n", val)
-				t.Errorf("\t: value unexpected\n")
-			}
+			testhelper.DiffFloat64(t, tc.IDStr(), "float",
+				val, tc.valExpected, 0.000001)
 		}
 	}
 }
@@ -157,12 +148,7 @@ func TestGetString(t *testing.T) {
 		val, err := getString(tc.param)
 		if testhelper.CheckExpErr(t, err, tc) &&
 			err == nil {
-			if val != tc.valExpected {
-				t.Log(tc.IDStr())
-				t.Logf("\t: expected: %s\n", tc.valExpected)
-				t.Logf("\t:      got: %s\n", val)
-				t.Errorf("\t: value unexpected\n")
-			}
+			testhelper.DiffString(t, tc.IDStr(), "string", val, tc.valExpected)
 		}
 	}
 }

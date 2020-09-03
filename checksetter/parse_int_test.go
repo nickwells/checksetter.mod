@@ -115,12 +115,9 @@ func TestParse(t *testing.T) {
 
 // checkParseResults checks that the results of parsing are as expected
 func checkParseResults(t *testing.T, slcLen int, err error, tc parseTestInfo) {
+	t.Helper()
+
 	if testhelper.CheckExpErr(t, err, tc) && err == nil {
-		if slcLen != tc.lenExpected {
-			t.Log(tc.IDStr())
-			t.Logf("\t: expected: %d", tc.lenExpected)
-			t.Logf("\t:      got: %d", slcLen)
-			t.Errorf("\t: unexpected number of checks\n")
-		}
+		testhelper.DiffInt(t, tc.IDStr(), "# of checks", slcLen, tc.lenExpected)
 	}
 }

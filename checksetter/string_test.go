@@ -124,7 +124,6 @@ func TestChkString(t *testing.T) {
 			}
 			testhelper.CheckExpErrWithID(t, tc.IDStr()+" (string checks)",
 				err, tc.strExpErr)
-
 		}
 	}
 }
