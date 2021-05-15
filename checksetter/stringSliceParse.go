@@ -33,6 +33,7 @@ func init() {
 var strSlcCFNoParam = map[string]check.StringSlice{
 	"NoDups": check.StringSliceNoDups,
 }
+
 var strSlcCFInt = map[string]func(int) check.StringSlice{
 	"LenEQ": check.StringSliceLenEQ,
 	"LenGT": check.StringSliceLenGT,

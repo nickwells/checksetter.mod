@@ -98,7 +98,7 @@ func TestChkStringSlice(t *testing.T) {
 
 	for _, tc := range testCases {
 		var checks []check.StringSlice
-		var checker = checksetter.StringSlice{Value: &checks}
+		checker := checksetter.StringSlice{Value: &checks}
 		err := checker.SetWithVal("dummy", tc.arg)
 		if testhelper.CheckExpErr(t, err, tc) &&
 			err == nil {

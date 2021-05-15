@@ -31,6 +31,7 @@ func avalTNameAbbr(t *testing.T) string {
 	t.Helper()
 	return strings.TrimPrefix(t.Name(), "TestAllowedValues")
 }
+
 func TestAllowedValuesStringSlice(t *testing.T) {
 	var checks []check.StringSlice
 	setter := checksetter.StringSlice{Value: &checks}

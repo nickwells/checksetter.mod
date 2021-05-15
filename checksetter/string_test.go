@@ -107,7 +107,7 @@ func TestChkString(t *testing.T) {
 
 	for _, tc := range testCases {
 		var checks []check.String
-		var checker = checksetter.String{Value: &checks}
+		checker := checksetter.String{Value: &checks}
 		err := checker.SetWithVal("dummy", tc.arg)
 
 		if testhelper.CheckExpErr(t, err, tc) &&
