@@ -3,7 +3,7 @@ package checksetter_test
 import (
 	"testing"
 
-	"github.com/nickwells/check.mod/check"
+	"github.com/nickwells/check.mod/v2/check"
 	"github.com/nickwells/checksetter.mod/v3/checksetter"
 )
 

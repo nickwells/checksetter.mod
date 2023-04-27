@@ -5,11 +5,35 @@ import (
 	"go/ast"
 	"go/token"
 	"strconv"
+	"strings"
 )
 
-// getInt converts the expression which is expected to be a BasicLit into the
+// getInt64 converts the expression which is expected to be a BasicLit into the
 // corresponding int64
-func getInt(e ast.Expr) (int64, error) {
+func getInt64(e ast.Expr) (int64, error) {
+	v, ok := e.(*ast.BasicLit)
+	if !ok {
+		return 0,
+			fmt.Errorf("the expression should have been a literal not %T", e)
+	}
+
+	if v.Kind != token.INT {
+		return 0,
+			fmt.Errorf("the expression should have been a literal INT, was %s",
+				v.Kind)
+	}
+	i, err := strconv.ParseInt(v.Value, 0, 64)
+	if err != nil {
+		return 0,
+			fmt.Errorf("Couldn't convert '%s' into an int64: %s",
+				v.Value, err)
+	}
+	return i, nil
+}
+
+// getInt converts the expression which is expected to be a BasicLit into the
+// corresponding int
+func getInt(e ast.Expr) (int, error) {
 	v, ok := e.(*ast.BasicLit)
 	if !ok {
 		return 0,
@@ -27,7 +51,7 @@ func getInt(e ast.Expr) (int64, error) {
 			fmt.Errorf("Couldn't convert '%s' into an int: %s",
 				v.Value, err)
 	}
-	return i, nil
+	return int(i), nil
 }
 
 // getFloat converts the expression which is expected to be a BasicLit into the
@@ -69,5 +93,5 @@ func getString(e ast.Expr) (string, error) {
 				"the expression should have been a literal STRING, was %s",
 				v.Kind)
 	}
-	return v.Value, nil
+	return strings.Trim(v.Value, `"`), nil
 }

@@ -1,7 +1,7 @@
 package checksetter
 
 import (
-	"github.com/nickwells/check.mod/check"
+	"github.com/nickwells/check.mod/v2/check"
 	"github.com/nickwells/param.mod/v5/param/psetter"
 )
 

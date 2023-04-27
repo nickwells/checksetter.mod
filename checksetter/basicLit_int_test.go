@@ -48,7 +48,7 @@ func TestGetInt(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		val, err := getInt(tc.param)
+		val, err := getInt64(tc.param)
 		if testhelper.CheckExpErr(t, err, tc) &&
 			err == nil {
 			testhelper.DiffInt64(t, tc.IDStr(), "int", val, tc.valExpected)
@@ -128,7 +128,7 @@ func TestGetString(t *testing.T) {
 		{
 			ID:          testhelper.MkID("good"),
 			param:       exprArgString,
-			valExpected: `"hello"`,
+			valExpected: "hello",
 		},
 		{
 			ID:    testhelper.MkID("bad - is a BasicLit but not a STRING"),

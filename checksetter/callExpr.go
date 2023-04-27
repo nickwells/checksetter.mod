@@ -3,7 +3,6 @@ package checksetter
 import (
 	"fmt"
 	"go/ast"
-	"strings"
 )
 
 // funcDetails records details about a function grouping them into a single
@@ -58,9 +57,24 @@ func getArg(e *ast.CallExpr, idx int) (ast.Expr, error) {
 	return e.Args[idx], nil
 }
 
-// getArgAsInt gets an int64 arg from the list of arguments to the function
+// getArgAsInt64 gets an int64 arg from the list of arguments to the function
 // returning an error if there are any problems
-func getArgAsInt(e *ast.CallExpr, idx int) (int64, error) {
+func getArgAsInt64(e *ast.CallExpr, idx int) (int64, error) {
+	argExpr, err := getArg(e, idx)
+	if err != nil {
+		return 0, err
+	}
+	i, err := getInt64(argExpr)
+	if err != nil {
+		return 0, fmt.Errorf("can't convert argument %d to an int64: %s",
+			idx, err)
+	}
+	return i, nil
+}
+
+// getArgAsInt gets an int arg from the list of arguments to the function
+// returning an error if there are any problems
+func getArgAsInt(e *ast.CallExpr, idx int) (int, error) {
 	argExpr, err := getArg(e, idx)
 	if err != nil {
 		return 0, err
@@ -86,19 +100,4 @@ func getArgAsFloat(e *ast.CallExpr, idx int) (float64, error) {
 			idx, err)
 	}
 	return f, nil
-}
-
-// getArgAsString gets a string arg from the list of arguments to the
-// function returning an error if there are any problems
-func getArgAsString(e *ast.CallExpr, idx int) (string, error) {
-	argExpr, err := getArg(e, idx)
-	if err != nil {
-		return "", err
-	}
-	s, err := getString(argExpr)
-	if err != nil {
-		return "", fmt.Errorf("can't convert argument %d to a string: %s",
-			idx, err)
-	}
-	return strings.Trim(s, "\""), nil
 }

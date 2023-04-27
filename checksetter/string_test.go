@@ -3,7 +3,7 @@ package checksetter_test
 import (
 	"testing"
 
-	"github.com/nickwells/check.mod/check"
+	"github.com/nickwells/check.mod/v2/check"
 	"github.com/nickwells/checksetter.mod/v3/checksetter"
 	"github.com/nickwells/testhelper.mod/testhelper"
 )
@@ -38,14 +38,14 @@ func TestChkString(t *testing.T) {
 		},
 		{
 			ID: testhelper.MkID(
-				"ok - one chk func (one int param), string ok"),
-			arg: "LenEQ(3)",
+				"ok - one chk func (one intCF param), string ok"),
+			arg: "Length(EQ(3))",
 			s:   "two",
 		},
 		{
 			ID: testhelper.MkID(
-				"ok - one chk func (two int param), string ok"),
-			arg: "LenBetween(2, 3)",
+				"ok - one chk func (one intCF param), string ok"),
+			arg: "Length(Between(2, 3))",
 			s:   "two",
 		},
 		{
@@ -56,37 +56,42 @@ func TestChkString(t *testing.T) {
 		},
 		{
 			ID:  testhelper.MkID("ok - two chk funcs, string ok"),
-			arg: `HasPrefix("rc"), LenEQ(5)`,
+			arg: `HasPrefix("rc"), Length(EQ(5))`,
 			s:   "rc001",
 		},
 		{
 			ID:  testhelper.MkID("ok - two chk funcs, string bad"),
-			arg: `LenEQ(5), Or(And(HasPrefix("rc"), LenEQ(4)), LenEQ(3))`,
+			arg: `Length(EQ(5)), Or(And(HasPrefix("rc"), Length(EQ(4))), Length(EQ(3)))`,
 			s:   "rc002",
 			strExpErr: testhelper.MkExpErr(
-				"the length of the value (5) must equal 4",
-				" or the length of the value (5) must equal 3"),
+				"the length of the string (5) is incorrect",
+				"the value (5) must equal 4",
+				"the value (5) must equal 3"),
 		},
 		{
 			ID: testhelper.MkID(
 				"bad - one chk func (two int param) - unknown func"),
-			arg:    "LenBetweenXXX(2, 3)",
-			ExpErr: testhelper.MkExpErr("bad function", "LenBetweenXXX"),
+			arg: "Length(BetweenXXX(2, 3))",
+			ExpErr: testhelper.MkExpErr(
+				"bad function",
+				"can't make the check.String func: Length(...):",
+				"unknown check.Int: BetweenXXX",
+			),
 		},
 		{
 			ID: testhelper.MkID(
 				"bad - one chk func (two int param) - invalid params"),
-			arg: "LenBetween(5, 3)",
+			arg: "Length(Between(5, 3))",
 			ExpErr: testhelper.MkExpErr(
 				"bad function: ",
 				"can't make the check.String func: ",
-				"Impossible checks passed to StringLenBetween",
+				"Impossible checks passed to ValBetween",
 			),
 		},
 		{
 			ID: testhelper.MkID(
 				"bad - one chk func (two int param) - too many params"),
-			arg: "LenBetween(1, 2, 3)",
+			arg: "Length(Between(1, 2, 3))",
 			ExpErr: testhelper.MkExpErr(
 				"bad function: ",
 				"can't make the check.String func: ",
@@ -96,7 +101,7 @@ func TestChkString(t *testing.T) {
 		{
 			ID: testhelper.MkID(
 				"bad - one chk func (two int param) - too few params"),
-			arg: "LenBetween(1)",
+			arg: "Length(Between(1))",
 			ExpErr: testhelper.MkExpErr(
 				"bad function: ",
 				"can't make the check.String func: ",

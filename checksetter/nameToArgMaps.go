@@ -7,25 +7,19 @@ import (
 
 var mapOfNameToArgMaps = map[string]map[string]string{
 	strSlcCFName: {
-		"NoDups":           "",
-		"LenEQ":            "int",
-		"LenGT":            "int",
-		"LenLT":            "int",
-		"LenBetween":       "int, int",
-		"String":           strCFName,
-		"Contains":         strCFName + ", string",
-		"Not":              strSlcCFName + ", string",
-		"And":              strSlcCFName + " ...",
-		"Or":               strSlcCFName + " ...",
-		"StringCheckByPos": strCFName + " ...",
+		"NoDups":     "",
+		"Length":     intCFName,
+		"SliceAny":   strCFName + ", string",
+		"SliceAll":   strCFName,
+		"Not":        strSlcCFName + ", string",
+		"And":        strSlcCFName + " ...",
+		"Or":         strSlcCFName + " ...",
+		"SliceByPos": strCFName + " ...",
 	},
 	strCFName: {
 		"OK":             "",
-		"LenEQ":          "int",
-		"LenGT":          "int",
-		"LenLT":          "int",
-		"LenBetween":     "int, int",
-		"Equals":         "string",
+		"Length":         intCFName,
+		"EQ":             "string",
 		"HasPrefix":      "string",
 		"HasSuffix":      "string",
 		"MatchesPattern": "regexp, string",
@@ -46,6 +40,19 @@ var mapOfNameToArgMaps = map[string]map[string]string{
 		"And":         int64CFName + " ...",
 		"Or":          int64CFName + " ...",
 	},
+	intCFName: {
+		"EQ":          "int",
+		"GT":          "int",
+		"GE":          "int",
+		"LT":          "int",
+		"LE":          "int",
+		"Divides":     "int",
+		"IsAMultiple": "int",
+		"Between":     "int, int",
+		"Not":         intCFName + ", string",
+		"And":         intCFName + " ...",
+		"Or":          intCFName + " ...",
+	},
 	float64CFName: {
 		"GT":      "float",
 		"GE":      "float",
@@ -62,8 +69,7 @@ var mapOfNameToArgMaps = map[string]map[string]string{
 // returns what's left. This gives you a string that can be tested to see if
 // it's the name of a set of allowed values
 func trimArg(a string) string {
-	a = strings.TrimLeft(a, " ")
-	a = strings.TrimRight(a, " ")
+	a = strings.Trim(a, " ")
 	a = strings.TrimSuffix(a, "...")
 	a = strings.TrimRight(a, " ")
 	return a

@@ -5,7 +5,7 @@ import (
 	"go/ast"
 	"go/parser"
 
-	"github.com/nickwells/check.mod/check"
+	"github.com/nickwells/check.mod/v2/check"
 )
 
 const (
@@ -27,23 +27,23 @@ func init() {
 }
 
 var float64CFFloat = map[string]func(float64) check.Float64{
-	"GT": check.Float64GT,
-	"GE": check.Float64GE,
-	"LT": check.Float64LT,
-	"LE": check.Float64LE,
+	"GT": check.ValGT[float64],
+	"GE": check.ValGE[float64],
+	"LT": check.ValLT[float64],
+	"LE": check.ValLE[float64],
 }
 
 var float64CFFloatFloat = map[string]func(float64, float64) check.Float64{
-	"Between": check.Float64Between,
+	"Between": check.ValBetween[float64],
 }
 
 var float64CFFloat64CFStr = map[string]func(check.Float64, string) check.Float64{
-	"Not": check.Float64Not,
+	"Not": check.Not[float64],
 }
 
 var float64CFFloat64CFList = map[string]func(...check.Float64) check.Float64{
-	"And": check.Float64And,
-	"Or":  check.Float64Or,
+	"And": check.And[float64],
+	"Or":  check.Or[float64],
 }
 
 // makeFloat64CFFloat returns a Float64 checker corresponding to the
@@ -133,17 +133,12 @@ func makeFloat64CFFloat64CFStr(e *ast.CallExpr, fName string) (cf check.Float64,
 		return nil, fmt.Errorf("%s %s", errIntro(), err)
 	}
 
-	argExpr, err := getArg(e, 0)
-	if err != nil {
-		return nil, fmt.Errorf("%s can't get the %s argument: %s",
-			errIntro(), float64CFName, err)
-	}
-	fcf, err := getFuncFloat64CF(argExpr)
+	fcf, err := getFuncFloat64CF(e.Args[0])
 	if err != nil {
 		return nil, fmt.Errorf("%s can't convert argument %d to %s: %s",
 			errIntro(), 0, float64CFName, err)
 	}
-	s, err = getArgAsString(e, 1)
+	s, err = getString(e.Args[1])
 	if err != nil {
 		return nil, fmt.Errorf("%s %s", errIntro(), err)
 	}

@@ -5,7 +5,7 @@ import (
 	"go/ast"
 	"go/parser"
 
-	"github.com/nickwells/check.mod/check"
+	"github.com/nickwells/check.mod/v2/check"
 )
 
 const (
@@ -20,8 +20,7 @@ var strSlcCFArgsToFunc map[string]strSlcCFMaker
 func init() {
 	strSlcCFArgsToFunc = map[string]strSlcCFMaker{
 		"":                        makeStrSlcCF,
-		"int":                     makeStrSlcCFInt,
-		"int, int":                makeStrSlcCFIntInt,
+		intCFName:                 makeStrSlcCFIntCF,
 		strCFName:                 makeStrSlcCFStrCF,
 		strCFName + " ...":        makeStrSlcCFStrCFList,
 		strCFName + ", string":    makeStrSlcCFStrCFStr,
@@ -31,38 +30,32 @@ func init() {
 }
 
 var strSlcCFNoParam = map[string]check.StringSlice{
-	"NoDups": check.StringSliceNoDups,
+	"NoDups": check.SliceHasNoDups[[]string, string],
 }
 
-var strSlcCFInt = map[string]func(int) check.StringSlice{
-	"LenEQ": check.StringSliceLenEQ,
-	"LenGT": check.StringSliceLenGT,
-	"LenLT": check.StringSliceLenLT,
-}
-
-var strSlcCFIntInt = map[string]func(int, int) check.StringSlice{
-	"LenBetween": check.StringSliceLenBetween,
-}
-
-var strSlcCFStrCF = map[string]func(check.String) check.StringSlice{
-	"String": check.StringSliceStringCheck,
+var strSlcCFIntCF = map[string]func(check.ValCk[int]) check.StringSlice{
+	"Length": check.SliceLength[[]string, string],
 }
 
 var strSlcCFStrCFList = map[string]func(...check.String) check.StringSlice{
-	"StringCheckByPos": check.StringSliceStringCheckByPos,
+	"SliceByPos": check.SliceByPos[[]string, string],
 }
 
 var strSlcCFStrCFStr = map[string]func(check.String, string) check.StringSlice{
-	"Contains": check.StringSliceContains,
+	"SliceAny": check.SliceAny[[]string, string],
+}
+
+var strSlcCFStrCF = map[string]func(check.String) check.StringSlice{
+	"SliceAll": check.SliceAll[[]string, string],
 }
 
 var strSlcCFStrSlcCFStr = map[string]func(check.StringSlice, string) check.StringSlice{
-	"Not": check.StringSliceNot,
+	"Not": check.Not[[]string],
 }
 
 var strSlcCFStrSlcCFList = map[string]func(...check.StringSlice) check.StringSlice{
-	"And": check.StringSliceAnd,
-	"Or":  check.StringSliceOr,
+	"And": check.And[[]string],
+	"Or":  check.Or[[]string],
 }
 
 // makeStrSlcCF returns a StringSlice checker corresponding to the
@@ -83,13 +76,12 @@ func makeStrSlcCF(e *ast.CallExpr, fName string) (cf check.StringSlice, err erro
 	return nil, fmt.Errorf("%s the name is not recognised", errIntro)
 }
 
-// makeStrSlcCFInt returns a StringSlice checker corresponding to the
-// given name - this is for checkers that take a single integer parameter
-func makeStrSlcCFInt(e *ast.CallExpr, fName string) (cf check.StringSlice, err error) {
-	var i int64
+// makeStrSlcCFIntCF returns a StringSlice checker corresponding to the
+// given name - this is for checkers that take a single integer-checker parameter
+func makeStrSlcCFIntCF(e *ast.CallExpr, fName string) (cf check.StringSlice, err error) {
 	errIntro := func() string {
-		return fmt.Sprintf("can't make the %s func: %s(%d):",
-			strSlcCFName, fName, i)
+		return fmt.Sprintf("can't make the %s func: %s(...):",
+			strSlcCFName, fName)
 	}
 	defer func() {
 		if r := recover(); r != nil {
@@ -102,85 +94,48 @@ func makeStrSlcCFInt(e *ast.CallExpr, fName string) (cf check.StringSlice, err e
 		return nil, fmt.Errorf("%s %s", errIntro(), err)
 	}
 
-	i, err = getArgAsInt(e, 0)
+	var icf check.ValCk[int]
+	icf, err = getFuncIntCF(e.Args[0])
 	if err != nil {
 		return nil, fmt.Errorf("%s %s", errIntro(), err)
 	}
 
-	if f, ok := strSlcCFInt[fName]; ok {
-		return f(int(i)), nil
-	}
-
-	return nil, fmt.Errorf("%s the name is not recognised", errIntro())
-}
-
-// makeStrSlcCFIntInt returns a StringSlice checker corresponding to the
-// given name - this is for checkers that take two integer parameters
-func makeStrSlcCFIntInt(e *ast.CallExpr, fName string) (cf check.StringSlice, err error) {
-	var i, j int64
-	errIntro := func() string {
-		return fmt.Sprintf("can't make the %s func: %s(%d, %d):",
-			strSlcCFName, fName, i, j)
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			cf = nil
-			err = fmt.Errorf("%s %v", errIntro(), r)
-		}
-	}()
-
-	if err = checkArgCount(e, 2); err != nil {
-		return nil, fmt.Errorf("%s %s", errIntro(), err)
-	}
-
-	i, err = getArgAsInt(e, 0)
-	if err != nil {
-		return nil, fmt.Errorf("%s %s", errIntro(), err)
-	}
-	j, err = getArgAsInt(e, 1)
-	if err != nil {
-		return nil, fmt.Errorf("%s %s", errIntro(), err)
-	}
-
-	if f, ok := strSlcCFIntInt[fName]; ok {
-		return f(int(i), int(j)), nil
+	if f, ok := strSlcCFIntCF[fName]; ok {
+		return f(icf), nil
 	}
 
 	return nil, fmt.Errorf("%s the name is not recognised", errIntro())
 }
 
 // makeStrSlcCFStrCF returns a StringSlice checker corresponding to the
-// given name - this is for checkers that take a string check parameter
+// given name - this is for checkers that take a single String-checker parameter
 func makeStrSlcCFStrCF(e *ast.CallExpr, fName string) (cf check.StringSlice, err error) {
-	errIntro := "can't make the " + strSlcCFName +
-		" func: " + fName + "(" + strCFName + "):"
+	errIntro := func() string {
+		return fmt.Sprintf("can't make the %s func: %s(...):",
+			strSlcCFName, fName)
+	}
 	defer func() {
 		if r := recover(); r != nil {
 			cf = nil
-			err = fmt.Errorf("%s %v", errIntro, r)
+			err = fmt.Errorf("%s %v", errIntro(), r)
 		}
 	}()
 
 	if err = checkArgCount(e, 1); err != nil {
-		return nil, fmt.Errorf("%s %s", errIntro, err)
+		return nil, fmt.Errorf("%s %s", errIntro(), err)
 	}
 
-	argExpr, err := getArg(e, 0)
+	var scf check.String
+	scf, err = getFuncStrCF(e.Args[0])
 	if err != nil {
-		return nil, fmt.Errorf("%s can't get the %s argument: %s",
-			errIntro, strCFName, err)
-	}
-	scf, err := getFuncStrCF(argExpr)
-	if err != nil {
-		return nil, fmt.Errorf("%s can't convert argument %d to %s: %s",
-			errIntro, 0, strCFName, err)
+		return nil, fmt.Errorf("%s %s", errIntro(), err)
 	}
 
 	if f, ok := strSlcCFStrCF[fName]; ok {
 		return f(scf), nil
 	}
 
-	return nil, fmt.Errorf("%s the name is not recognised", errIntro)
+	return nil, fmt.Errorf("%s the name is not recognised", errIntro())
 }
 
 // makeStrSlcCFStrCFStr returns a StringSlice checker corresponding to the
@@ -203,17 +158,12 @@ func makeStrSlcCFStrCFStr(e *ast.CallExpr, fName string) (cf check.StringSlice, 
 		return nil, fmt.Errorf("%s %s", errIntro(), err)
 	}
 
-	argExpr, err := getArg(e, 0)
-	if err != nil {
-		return nil, fmt.Errorf("%s can't get the %s argument: %s",
-			errIntro(), strCFName, err)
-	}
-	scf, err := getFuncStrCF(argExpr)
+	scf, err := getFuncStrCF(e.Args[0])
 	if err != nil {
 		return nil, fmt.Errorf("%s can't convert argument %d to %s: %s",
 			errIntro(), 0, strCFName, err)
 	}
-	s, err = getArgAsString(e, 1)
+	s, err = getString(e.Args[1])
 	if err != nil {
 		return nil, fmt.Errorf("%s %s", errIntro(), err)
 	}
@@ -275,19 +225,17 @@ func makeStrSlcCFStrSlcCFStr(e *ast.CallExpr, fName string) (cf check.StringSlic
 		return nil, fmt.Errorf("%s %s", errIntro(), err)
 	}
 
-	argExpr, err := getArg(e, 0)
+	sscf, err := getFuncStrSlcCF(e.Args[0])
 	if err != nil {
-		return nil, fmt.Errorf("%s can't get the %s argument: %s",
+		return nil, fmt.Errorf(
+			"%s can't convert the first argument to %s: %s",
 			errIntro(), strSlcCFName, err)
 	}
-	sscf, err := getFuncStrSlcCF(argExpr)
+	s, err = getString(e.Args[1])
 	if err != nil {
-		return nil, fmt.Errorf("%s can't convert argument %d to %s: %s",
-			errIntro(), 0, strSlcCFName, err)
-	}
-	s, err = getArgAsString(e, 1)
-	if err != nil {
-		return nil, fmt.Errorf("%s %s", errIntro(), err)
+		return nil, fmt.Errorf(
+			"%s can't convert the second argument to a string: %s",
+			errIntro(), err)
 	}
 
 	if f, ok := strSlcCFStrSlcCFStr[fName]; ok {
@@ -362,14 +310,6 @@ func stringSliceCFParse(s string) ([]check.StringSlice, error) {
 // getFuncStrSlcCF will process the expression and return a string slice
 // checker or nil
 func getFuncStrSlcCF(elt ast.Expr) (cf check.StringSlice, err error) {
-	e, ok := elt.(*ast.CallExpr)
-	if !ok {
-		if eIdent, ok := elt.(*ast.Ident); ok {
-			return makeStrSlcCF((*ast.CallExpr)(nil), eIdent.Name)
-		}
-		return nil, fmt.Errorf("unexpected type: %T", elt)
-	}
-
 	defer func() {
 		if r := recover(); r != nil {
 			cf = nil
@@ -377,16 +317,23 @@ func getFuncStrSlcCF(elt ast.Expr) (cf check.StringSlice, err error) {
 		}
 	}()
 
-	fd, err := getFuncDetails(e, strSlcCFName)
-	if err != nil {
-		return nil, err
+	switch e := elt.(type) {
+	case *ast.Ident:
+		return makeStrSlcCF(nil, e.Name)
+	case *ast.CallExpr:
+		fd, err := getFuncDetails(e, strSlcCFName)
+		if err != nil {
+			return nil, err
+		}
+
+		maker, ok := strSlcCFArgsToFunc[fd.expectedArgs]
+		if !ok {
+			return nil, fmt.Errorf("%s has an unrecognised argument list: %s",
+				fd.name, fd.expectedArgs)
+		}
+
+		return maker(e, fd.name)
 	}
 
-	maker, ok := strSlcCFArgsToFunc[fd.expectedArgs]
-	if !ok {
-		return nil, fmt.Errorf("%s has an unrecognised argument list: %s",
-			fd.name, fd.expectedArgs)
-	}
-
-	return maker(e, fd.name)
+	return nil, fmt.Errorf("unexpected type: %T", elt)
 }

@@ -218,7 +218,7 @@ func TestGetArgAsInt(t *testing.T) {
 			ce: callExprs[1].ce,
 			n:  1,
 			ExpErr: testhelper.MkExpErr(
-				"can't convert argument 1 to an int:",
+				"can't convert argument 1 to an int64:",
 				" the expression should have been a literal INT, was STRING"),
 		},
 		{
@@ -238,7 +238,7 @@ func TestGetArgAsInt(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		val, err := getArgAsInt(tc.ce, tc.n)
+		val, err := getArgAsInt64(tc.ce, tc.n)
 		if testhelper.CheckExpErr(t, err, tc) &&
 			err == nil {
 			testhelper.DiffInt64(t, tc.IDStr(), "int", val, tc.expVal)
