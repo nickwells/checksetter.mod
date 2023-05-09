@@ -5,7 +5,7 @@ import (
 	"go/parser"
 	"testing"
 
-	"github.com/nickwells/testhelper.mod/testhelper"
+	"github.com/nickwells/testhelper.mod/v2/testhelper"
 )
 
 // callExprTestVals returns various expressions for other tests
@@ -67,8 +67,32 @@ func exprTestVals(t *testing.T) (callExpr, litInt, litFloat, litStr ast.Expr) {
 	return
 }
 
+// exprTestBigVals returns various expressions representing large literal
+// values for other tests
+func exprTestBigVals(t *testing.T) (litInt, litFloat ast.Expr) {
+	t.Helper()
+
+	exprStr := `callFunc(999999999999999999999, 1e999999)`
+
+	callExpr, err := parser.ParseExpr(exprStr)
+	if err != nil {
+		t.Fatal("cannot parse the expression: ", exprStr, " error: ", err)
+	}
+
+	ce, ok := callExpr.(*ast.CallExpr)
+	if !ok {
+		t.Fatalf("the expression is not an ast.CallExpr: %T", callExpr)
+	}
+
+	litInt = ce.Args[0]
+	litFloat = ce.Args[1]
+
+	return
+}
+
 func TestGetInt(t *testing.T) {
 	callExpr, litInt, litFloat, litStr := exprTestVals(t)
+	bigLitInt, _ := exprTestBigVals(t)
 
 	testCases := []struct {
 		testhelper.ID
@@ -99,19 +123,28 @@ func TestGetInt(t *testing.T) {
 			ExpErr: testhelper.MkExpErr(
 				"the expression isn't a BasicLit, it's a *ast.CallExpr"),
 		},
+		{
+			ID:    testhelper.MkID("bad - int too big"),
+			param: bigLitInt,
+			ExpErr: testhelper.MkExpErr(
+				`Couldn't make an int from "999999999999999999999":` +
+					` strconv.ParseInt: parsing "999999999999999999999":` +
+					` value out of range`),
+		},
 	}
 
 	for _, tc := range testCases {
 		val, err := getInt64(tc.param)
 		if testhelper.CheckExpErr(t, err, tc) &&
 			err == nil {
-			testhelper.DiffInt64(t, tc.IDStr(), "int", val, tc.valExpected)
+			testhelper.DiffInt(t, tc.IDStr(), "int", val, tc.valExpected)
 		}
 	}
 }
 
 func TestGetFloat(t *testing.T) {
 	callExpr, litInt, litFloat, litStr := exprTestVals(t)
+	_, bigLitFloat := exprTestBigVals(t)
 
 	testCases := []struct {
 		testhelper.ID
@@ -140,13 +173,21 @@ func TestGetFloat(t *testing.T) {
 			ExpErr: testhelper.MkExpErr(
 				"the expression isn't a BasicLit, it's a *ast.CallExpr"),
 		},
+		{
+			ID:    testhelper.MkID("bad - not a BasicLit"),
+			param: bigLitFloat,
+			ExpErr: testhelper.MkExpErr(
+				`Couldn't make a float "1e999999":` +
+					` strconv.ParseFloat: parsing "1e999999":` +
+					` value out of range`),
+		},
 	}
 
 	for _, tc := range testCases {
 		val, err := getFloat64(tc.param)
 		if testhelper.CheckExpErr(t, err, tc) &&
 			err == nil {
-			testhelper.DiffFloat64(t, tc.IDStr(), "float",
+			testhelper.DiffFloat(t, tc.IDStr(), "float",
 				val, tc.valExpected, 0.000001)
 		}
 	}
@@ -322,6 +363,11 @@ func TestGetCheckFunc(t *testing.T) {
 		_, err = getCheckFunc[[]string](callExpr, tc.idx, StringSliceCheckerName)
 		testhelper.CheckExpErr(t, err, tc)
 	}
+
+	expErr := testhelper.MkExpErr(
+		`There is no Parser registered for "nonesuch"`)
+	_, err = getCheckFunc[int](callExpr, 1, "nonesuch")
+	testhelper.CheckExpErrWithID(t, "nonesuch", err, expErr)
 }
 
 func TestGetCheckFuncs(t *testing.T) {
@@ -413,4 +459,9 @@ func TestGetCheckFuncs(t *testing.T) {
 			testhelper.CheckExpErr(t, err, tc)
 		}
 	}
+
+	expErr := testhelper.MkExpErr(
+		`There is no Parser registered for "nonesuch"`)
+	_, err := getCheckFuncs[int](nil, "nonesuch")
+	testhelper.CheckExpErrWithID(t, "nonesuch", err, expErr)
 }
