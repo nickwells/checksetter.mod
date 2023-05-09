@@ -1,0 +1,15 @@
+a list of int-checker functions separated by ','. Write the checks as if you were writing code. The functions recognised are:
+
+    int-checker functions:
+        And(..., int-checker)
+        Between(int, int)
+        Divides(int)
+        EQ(int)
+        GE(int)
+        GT(int)
+        IsAMultiple(int)
+        LE(int)
+        LT(int)
+        Not(int-checker, string)
+        OK()
+        Or(..., int-checker)

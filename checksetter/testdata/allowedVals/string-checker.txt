@@ -1,0 +1,30 @@
+a list of string-checker functions separated by ','. Write the checks as if you were writing code. The functions recognised are:
+
+    string-checker functions:
+        And(..., string-checker)
+        EQ(string)
+        GE(string)
+        GT(string)
+        HasPrefix(string)
+        HasSuffix(string)
+        LE(string)
+        LT(string)
+        Length(int-checker)
+        MatchesPattern(regexp, string)
+        Not(string-checker, string)
+        OK()
+        Or(..., string-checker)
+
+    int-checker functions:
+        And(..., int-checker)
+        Between(int, int)
+        Divides(int)
+        EQ(int)
+        GE(int)
+        GT(int)
+        IsAMultiple(int)
+        LE(int)
+        LT(int)
+        Not(int-checker, string)
+        OK()
+        Or(..., int-checker)

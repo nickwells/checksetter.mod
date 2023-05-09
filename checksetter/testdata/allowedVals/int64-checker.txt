@@ -1,0 +1,15 @@
+a list of int64-checker functions separated by ','. Write the checks as if you were writing code. The functions recognised are:
+
+    int64-checker functions:
+        And(..., int64-checker)
+        Between(int64, int64)
+        Divides(int64)
+        EQ(int64)
+        GE(int64)
+        GT(int64)
+        IsAMultiple(int64)
+        LE(int64)
+        LT(int64)
+        Not(int64-checker, string)
+        OK()
+        Or(..., int64-checker)

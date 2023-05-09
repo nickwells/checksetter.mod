@@ -1,0 +1,41 @@
+a list of string-slice-checker functions separated by ','. Write the checks as if you were writing code. The functions recognised are:
+
+    string-slice-checker functions:
+        And(..., string-slice-checker)
+        Length(int-checker)
+        NoDups()
+        Not(string-slice-checker, string)
+        OK()
+        Or(..., string-slice-checker)
+        SliceAll(string-checker)
+        SliceAny(string-checker, string)
+        SliceByPos(..., string-checker)
+
+    int-checker functions:
+        And(..., int-checker)
+        Between(int, int)
+        Divides(int)
+        EQ(int)
+        GE(int)
+        GT(int)
+        IsAMultiple(int)
+        LE(int)
+        LT(int)
+        Not(int-checker, string)
+        OK()
+        Or(..., int-checker)
+
+    string-checker functions:
+        And(..., string-checker)
+        EQ(string)
+        GE(string)
+        GT(string)
+        HasPrefix(string)
+        HasSuffix(string)
+        LE(string)
+        LT(string)
+        Length(int-checker)
+        MatchesPattern(regexp, string)
+        Not(string-checker, string)
+        OK()
+        Or(..., string-checker)

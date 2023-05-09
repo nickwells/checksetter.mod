@@ -1,0 +1,12 @@
+a list of float64-checker functions separated by ','. Write the checks as if you were writing code. The functions recognised are:
+
+    float64-checker functions:
+        And(..., float64-checker)
+        Between(float64, float64)
+        GE(float64)
+        GT(float64)
+        LE(float64)
+        LT(float64)
+        Not(float64-checker, string)
+        OK()
+        Or(..., float64-checker)
