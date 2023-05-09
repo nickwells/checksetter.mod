@@ -1,9 +1,9 @@
-module github.com/nickwells/checksetter.mod/v3
+module github.com/nickwells/checksetter.mod/v4
 
 require (
 	github.com/nickwells/check.mod/v2 v2.1.9
 	github.com/nickwells/param.mod/v5 v5.16.1
-	github.com/nickwells/testhelper.mod v1.16.0
+	github.com/nickwells/testhelper.mod/v2 v2.1.2
 )
 
 require (
@@ -17,6 +17,7 @@ require (
 	github.com/nickwells/strdist.mod v1.1.10 // indirect
 	github.com/nickwells/tempus.mod v1.0.2 // indirect
 	github.com/nickwells/twrap.mod v1.5.1 // indirect
+	github.com/nickwells/xdg.mod v1.0.9 // indirect
 	golang.org/x/exp v0.0.0-20230420155640-133eef4313cb // indirect
 	golang.org/x/sys v0.7.0 // indirect
 	golang.org/x/term v0.7.0 // indirect
