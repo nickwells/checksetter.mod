@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/nickwells/check.mod/v2/check"
-	"github.com/nickwells/checksetter.mod/v3/checksetter"
+	"github.com/nickwells/checksetter.mod/v4/checksetter"
 	"github.com/nickwells/param.mod/v5/param/paramset"
 )
 
