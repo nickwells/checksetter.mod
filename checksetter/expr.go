@@ -70,7 +70,13 @@ func getString(e ast.Expr) (string, error) {
 
 // getElts returns a slice of expressions. If s does not represent an array
 // of ast.Expr's then a non-nil error is returned.
-func getElts(s, desc string) ([]ast.Expr, error) {
+func getElts(s, desc string) (e []ast.Expr, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			e, err = nil, fmt.Errorf("%s: unexpected parse error: %q", desc, r)
+		}
+	}()
+
 	expr, err := parser.ParseExpr("[]T{\n" + s + "}")
 	if err != nil {
 		return nil, err
