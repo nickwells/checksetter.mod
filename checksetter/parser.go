@@ -55,13 +55,13 @@ func MakeParser[T any](checkerName string, makers map[string]MakerInfo[T]) (
 //
 // This can be used to construct the Allowed Values message for a setter.
 func (p Parser[T]) Makers() []string {
-	makers := make([]string, 0, len(p.makers))
+	makers := sort.StringSlice(make([]string, 0, len(p.makers)))
 
 	for k := range p.makers {
 		makers = append(makers, k)
 	}
-	sort.Slice(makers, func(a, b int) bool { return makers[a] < makers[b] })
 
+	makers.Sort()
 	return makers
 }
 
@@ -119,17 +119,17 @@ func (p Parser[T]) Parse(s string) ([]check.ValCk[T], error) {
 	return ckFuncs, nil
 }
 
-// runMaker finds the appropriate function runMaker and calls it passing the
+// runMaker finds the appropriate function makerName and calls it passing the
 // CallExpr and the function name.
-func (p Parser[T]) runMaker(e *ast.CallExpr, name string) (
+func (p Parser[T]) runMaker(e *ast.CallExpr, makerName string) (
 	check.ValCk[T], error,
 ) {
-	maker, ok := p.makers[name]
+	maker, ok := p.makers[makerName]
 	if !ok {
-		return nil, fmt.Errorf("%s is an unknown function", name)
+		return nil, fmt.Errorf("%s is an unknown function", makerName)
 	}
 
-	return maker.MF(e, name)
+	return maker.MF(e, makerName)
 }
 
 // CallExprMaker finds the function name using the information given in the
@@ -156,7 +156,7 @@ func (p Parser[T]) ParseExpr(elt ast.Expr) (cf check.ValCk[T], err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			cf = nil
-			err = fmt.Errorf("Cannot create the %s func: %v", p.checkerName, r)
+			err = fmt.Errorf("Can't create the %s func: %v", p.checkerName, r)
 		}
 	}()
 
