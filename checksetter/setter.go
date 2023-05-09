@@ -77,4 +77,10 @@ func (s Setter[T]) CheckSetter(name string) {
 			"The Parser for checksetter.Setter[%T] has not been set",
 			v))
 	}
+	if len(s.Parser.Makers()) == 0 {
+		var v T
+		panic(fmt.Sprintf(
+			"The Parser for checksetter.Setter[%T] can't make any check-funcs",
+			v))
+	}
 }
