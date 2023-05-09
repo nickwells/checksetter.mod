@@ -7,21 +7,32 @@ import (
 	"github.com/nickwells/param.mod/v5/param/psetter"
 )
 
+// Setter satisfies the param.Setter interface. Important points of
+// difference are that you need to provide both the Parser (use the
+// checksetter.FindParserOrPanic func) and the Value when initialising the
+// Setter. Also, you will need to pass the address of the Setter rather than
+// the Setter itself, this is because the SetWithVal method takes a pointer
+// receiver.
 type Setter[T any] struct {
 	psetter.ValueReqMandatory
 	Parser *Parser[T]
 
 	Value *[]check.ValCk[T]
+
+	paramVal string
+	valSet   bool
 }
 
 // SetWithVal (called when a value follows the parameter) splits the value
 // into a slice of check.Int64's and sets the Value accordingly.
-func (s Setter[T]) SetWithVal(_ string, paramVal string) error {
+func (s *Setter[T]) SetWithVal(_ string, paramVal string) error {
 	v, err := s.Parser.Parse(paramVal)
 	if err != nil {
 		return err
 	}
 	*s.Value = v
+	s.paramVal = paramVal
+	s.valSet = true
 
 	return nil
 }
@@ -34,13 +45,21 @@ func (s Setter[T]) AllowedValues() string {
 
 // CurrentValue returns the current setting of the parameter value
 func (s Setter[T]) CurrentValue() string {
+	val := ""
 	switch len(*s.Value) {
 	case 0:
-		return "no checks"
+		val = "no checks"
 	case 1:
-		return "one check"
+		val = "one check"
+	default:
+		val = fmt.Sprintf("%d checks", len(*s.Value))
 	}
-	return fmt.Sprintf("%d checks", len(*s.Value))
+
+	if s.valSet {
+		val += fmt.Sprintf(": %q", s.paramVal)
+	}
+
+	return val
 }
 
 // CheckSetter panics if the setter has not been properly created - if the
