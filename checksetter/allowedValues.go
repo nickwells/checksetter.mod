@@ -25,6 +25,11 @@ func getOrderedNames(nameToArgs map[string][]string) []string {
 // given family of check functions. It will also show the allowed values for
 // any referenced families of check functions.
 func allowedValFuncs(checkerName string, makerFuncs map[string][]string) string {
+	const indent = "    "
+	if len(makerFuncs) == 0 {
+		return indent + "There are no available functions!"
+	}
+
 	type toShowDetails struct {
 		shown      bool
 		makerFuncs map[string][]string
@@ -34,10 +39,12 @@ func allowedValFuncs(checkerName string, makerFuncs map[string][]string) string 
 	}
 
 	allowedVals := make([]string, 0)
-	hasNew := true
-	for hasNew {
-		hasNew = false
-		for k, v := range toShow {
+	toShowKeys := []string{checkerName}
+
+	for len(toShowKeys) > 0 {
+		newKeys := []string{}
+		for _, k := range toShowKeys {
+			v := toShow[k]
 			if !v.shown {
 				v.shown = true
 				toShow[k] = v
@@ -45,15 +52,15 @@ func allowedValFuncs(checkerName string, makerFuncs map[string][]string) string 
 				names := getOrderedNames(v.makerFuncs)
 
 				funcSet := make([]string, 0, len(names)+1)
-				funcSet = append(funcSet, "the allowed "+k+" functions are:")
+				funcSet = append(funcSet, indent+k+" functions:")
 
 				for _, fn := range names {
 					funcSet = append(funcSet,
-						"    "+getCheckFuncDesc(fn, v.makerFuncs[fn]))
+						indent+indent+getCheckFuncDesc(fn, v.makerFuncs[fn]))
 					for _, arg := range v.makerFuncs[fn] {
 						if _, ok := toShow[arg]; !ok {
 							if p, ok := parserRegister[arg]; ok {
-								hasNew = true
+								newKeys = append(newKeys, arg)
 								toShow[arg] = toShowDetails{
 									makerFuncs: p.MakerFuncs(),
 								}
@@ -68,6 +75,7 @@ func allowedValFuncs(checkerName string, makerFuncs map[string][]string) string 
 				allowedVals = append(allowedVals, strings.Join(funcSet, "\n"))
 			}
 		}
+		toShowKeys = newKeys
 	}
 
 	return strings.Join(allowedVals, "\n\n")
@@ -76,12 +84,11 @@ func allowedValFuncs(checkerName string, makerFuncs map[string][]string) string 
 // AllowedValues returns a string descibing the allowed values for the given
 // class of Check functions
 func AllowedValues(checkerName string, makerFuncs map[string][]string) string {
-	rval := "a list of " + checkerName + " functions separated by ','.\n"
-	rval += `
-Write the checks as if you were writing code.
-
-The functions recognised are:
-` + allowedValFuncs(checkerName, makerFuncs)
+	rval := "a list of " + checkerName + " functions separated by ','." +
+		" Write the checks as if you were writing code." +
+		" The functions recognised are:" +
+		"\n\n" +
+		allowedValFuncs(checkerName, makerFuncs)
 
 	return rval
 }
