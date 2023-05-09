@@ -2,6 +2,7 @@ package checksetter
 
 import (
 	"fmt"
+	"sort"
 )
 
 func init() {
@@ -22,25 +23,6 @@ func init() {
 		panic(err)
 	}
 	_, err = MakeParser(
-		Int64CheckerName,
-		map[string]MakerInfo[int64]{
-			"OK":          i64Maker,
-			"EQ":          i64MakerI64,
-			"GT":          i64MakerI64,
-			"GE":          i64MakerI64,
-			"LT":          i64MakerI64,
-			"LE":          i64MakerI64,
-			"Divides":     i64MakerI64,
-			"IsAMultiple": i64MakerI64,
-			"Between":     i64MakerI64I64,
-			"Not":         i64MakerI64checkerString,
-			"And":         i64MakerMultiI64checker,
-			"Or":          i64MakerMultiI64checker,
-		})
-	if err != nil {
-		panic(err)
-	}
-	_, err = MakeParser(
 		IntCheckerName,
 		map[string]MakerInfo[int]{
 			"OK":          iMaker,
@@ -55,6 +37,25 @@ func init() {
 			"Not":         iMakerIcheckerString,
 			"And":         iMakerMultiIchecker,
 			"Or":          iMakerMultiIchecker,
+		})
+	if err != nil {
+		panic(err)
+	}
+	_, err = MakeParser(
+		Int64CheckerName,
+		map[string]MakerInfo[int64]{
+			"OK":          i64Maker,
+			"EQ":          i64MakerI64,
+			"GT":          i64MakerI64,
+			"GE":          i64MakerI64,
+			"LT":          i64MakerI64,
+			"LE":          i64MakerI64,
+			"Divides":     i64MakerI64,
+			"IsAMultiple": i64MakerI64,
+			"Between":     i64MakerI64I64,
+			"Not":         i64MakerI64checkerString,
+			"And":         i64MakerMultiI64checker,
+			"Or":          i64MakerMultiI64checker,
 		})
 	if err != nil {
 		panic(err)
@@ -141,4 +142,14 @@ func FindParserOrPanic[T any](checkerName string) *Parser[T] {
 	}
 
 	return parser
+}
+
+// ParsersAvailable returns a sorted list of all the available parsers
+func ParsersAvailable() []string {
+	pa := sort.StringSlice(make([]string, 0, len(parserRegister)))
+	for cn := range parserRegister {
+		pa = append(pa, cn)
+	}
+	pa.Sort()
+	return pa
 }
