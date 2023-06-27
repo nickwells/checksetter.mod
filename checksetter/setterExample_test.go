@@ -12,7 +12,7 @@ import (
 // package
 func ExampleSetter() {
 	chkFuncs := []check.ValCk[string]{}
-	ps := paramset.NewOrDie()
+	ps := paramset.NewOrPanic()
 
 	ps.Add("checks",
 		&checksetter.Setter[string]{
