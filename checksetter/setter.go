@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/nickwells/check.mod/v2/check"
-	"github.com/nickwells/param.mod/v5/param/psetter"
+	"github.com/nickwells/param.mod/v6/psetter"
 )
 
 // Setter satisfies the param.Setter interface. Important points of

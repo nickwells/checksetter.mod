@@ -5,7 +5,7 @@ import (
 
 	"github.com/nickwells/check.mod/v2/check"
 	"github.com/nickwells/checksetter.mod/v4/checksetter"
-	"github.com/nickwells/param.mod/v5/param/paramset"
+	"github.com/nickwells/param.mod/v6/paramset"
 )
 
 // ExampleSetter demonstrates how the Setter should be used with the param
