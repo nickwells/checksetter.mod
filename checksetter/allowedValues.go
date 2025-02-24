@@ -17,7 +17,9 @@ func getOrderedNames(nameToArgs map[string][]string) []string {
 	for k := range nameToArgs {
 		names = append(names, k)
 	}
+
 	sort.Strings(names)
+
 	return names
 }
 
@@ -26,6 +28,7 @@ func getOrderedNames(nameToArgs map[string][]string) []string {
 // any referenced families of check functions.
 func allowedValFuncs(checkerName string, makerFuncs map[string][]string) string {
 	const indent = "    "
+
 	if len(makerFuncs) == 0 {
 		return indent + "There are no available functions!"
 	}
@@ -34,6 +37,7 @@ func allowedValFuncs(checkerName string, makerFuncs map[string][]string) string 
 		shown      bool
 		makerFuncs map[string][]string
 	}
+
 	toShow := map[string]toShowDetails{
 		checkerName: {makerFuncs: makerFuncs},
 	}
@@ -43,6 +47,7 @@ func allowedValFuncs(checkerName string, makerFuncs map[string][]string) string 
 
 	for len(toShowKeys) > 0 {
 		newKeys := []string{}
+
 		for _, k := range toShowKeys {
 			v := toShow[k]
 			if !v.shown {
@@ -57,6 +62,7 @@ func allowedValFuncs(checkerName string, makerFuncs map[string][]string) string 
 				for _, fn := range names {
 					funcSet = append(funcSet,
 						indent+indent+getCheckFuncDesc(fn, v.makerFuncs[fn]))
+
 					for _, arg := range v.makerFuncs[fn] {
 						if _, ok := toShow[arg]; !ok {
 							if p, ok := parserRegister[arg]; ok {
@@ -72,9 +78,11 @@ func allowedValFuncs(checkerName string, makerFuncs map[string][]string) string 
 						}
 					}
 				}
+
 				allowedVals = append(allowedVals, strings.Join(funcSet, "\n"))
 			}
 		}
+
 		toShowKeys = newKeys
 	}
 

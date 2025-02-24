@@ -13,7 +13,9 @@ func callExprTestVals(t *testing.T) (callExprFFF, callExprFIF *ast.CallExpr) {
 	t.Helper()
 
 	var ok bool
+
 	var err error
+
 	var ce ast.Expr
 
 	exprStr := `callFunc(OK, OK, OK)`
@@ -48,6 +50,7 @@ func exprTestVals(t *testing.T) (callExpr, litInt, litFloat, litStr ast.Expr) {
 	t.Helper()
 
 	exprStr := `callFunc(1, 1.5, "hello")`
+
 	var err error
 
 	callExpr, err = parser.ParseExpr(exprStr)
@@ -275,10 +278,12 @@ func TestGetElts(t *testing.T) {
 
 func TestCheckArgCount(t *testing.T) {
 	e, _, _, _ := exprTestVals(t)
+
 	callExpr, ok := e.(*ast.CallExpr)
 	if !ok {
 		t.Fatalf("the expression is not an ast.CallExpr: %T", e)
 	}
+
 	testCases := []struct {
 		testhelper.ID
 		testhelper.ExpErr
@@ -394,8 +399,10 @@ func TestGetCheckFuncs(t *testing.T) {
 			if err != nil {
 				t.Log(tc.IDStr())
 				t.Errorf("\tunexpected error: %s", err)
+
 				continue
 			}
+
 			testhelper.DiffInt(t, tc.IDStr(), "length of checker slice",
 				len(valCks), tc.expLen)
 
@@ -408,8 +415,10 @@ func TestGetCheckFuncs(t *testing.T) {
 			if err != nil {
 				t.Log(tc.IDStr())
 				t.Errorf("\tunexpected error: %s", err)
+
 				continue
 			}
+
 			testhelper.DiffInt(t, tc.IDStr(), "length of checker slice",
 				len(valCks), tc.expLen)
 
@@ -422,8 +431,10 @@ func TestGetCheckFuncs(t *testing.T) {
 			if err != nil {
 				t.Log(tc.IDStr())
 				t.Errorf("\tunexpected error: %s", err)
+
 				continue
 			}
+
 			testhelper.DiffInt(t, tc.IDStr(), "length of checker slice",
 				len(valCks), tc.expLen)
 
@@ -436,8 +447,10 @@ func TestGetCheckFuncs(t *testing.T) {
 			if err != nil {
 				t.Log(tc.IDStr())
 				t.Errorf("\tunexpected error: %s", err)
+
 				continue
 			}
+
 			testhelper.DiffInt(t, tc.IDStr(), "length of checker slice",
 				len(valCks), tc.expLen)
 
@@ -450,8 +463,10 @@ func TestGetCheckFuncs(t *testing.T) {
 			if err != nil {
 				t.Log(tc.IDStr())
 				t.Errorf("\tunexpected error: %s", err)
+
 				continue
 			}
+
 			testhelper.DiffInt(t, tc.IDStr(), "length of checker slice",
 				len(valCks), tc.expLen)
 
@@ -463,5 +478,6 @@ func TestGetCheckFuncs(t *testing.T) {
 	expErr := testhelper.MkExpErr(
 		`There is no Parser registered for "nonesuch"`)
 	_, err := getCheckFuncs[int](nil, "nonesuch")
+
 	testhelper.CheckExpErrWithID(t, "nonesuch", err, expErr)
 }

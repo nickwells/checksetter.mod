@@ -11,12 +11,14 @@ func reportUnknownFuncErr(t *testing.T, err error, cName, fName string) {
 
 	if err == nil || err.Error() != expErrMsg {
 		t.Logf("Checker: %q, function: %q", cName, fName)
+
 		if err == nil {
 			t.Log("\t: No error was reported")
 		} else {
 			t.Logf("\t: error returned: %q", err)
 			t.Logf("\t: error expected: %q", expErrMsg)
 		}
+
 		t.Error("\t: name should have been flagged as unknown\n")
 	}
 }
@@ -25,9 +27,11 @@ func reportUnknownFuncErr(t *testing.T, err error, cName, fName string) {
 func initAllParsersCheckedRegister() map[string]bool {
 	pa := ParsersAvailable()
 	checked := map[string]bool{}
+
 	for _, cn := range pa {
 		checked[cn] = false
 	}
+
 	return checked
 }
 
@@ -51,6 +55,7 @@ func getParserRegisterEntry[T any](t *testing.T, cName string) *Parser[T] {
 	if !ok {
 		t.Fatal("bad ParserRegister entry: ", cName)
 	}
+
 	return p
 }
 
@@ -59,52 +64,62 @@ func TestMakerUnknownFunc(t *testing.T) {
 
 	{
 		p := getParserRegisterEntry[float64](t, Float64CheckerName)
+
 		makers := p.Makers()
 		for _, fName := range makers {
 			mi := p.makers[fName]
 			_, err := mi.MF(nil, "nonesuch")
 			reportUnknownFuncErr(t, err, p.checkerName, fName)
 		}
+
 		checked[p.checkerName] = true
 	}
 	{
 		p := getParserRegisterEntry[int](t, IntCheckerName)
+
 		makers := p.Makers()
 		for _, fName := range makers {
 			mi := p.makers[fName]
 			_, err := mi.MF(nil, "nonesuch")
 			reportUnknownFuncErr(t, err, p.checkerName, fName)
 		}
+
 		checked[p.checkerName] = true
 	}
 	{
 		p := getParserRegisterEntry[int64](t, Int64CheckerName)
+
 		makers := p.Makers()
 		for _, fName := range makers {
 			mi := p.makers[fName]
 			_, err := mi.MF(nil, "nonesuch")
 			reportUnknownFuncErr(t, err, p.checkerName, fName)
 		}
+
 		checked[p.checkerName] = true
 	}
 	{
 		p := getParserRegisterEntry[string](t, StringCheckerName)
+
 		makers := p.Makers()
 		for _, fName := range makers {
 			mi := p.makers[fName]
 			_, err := mi.MF(nil, "nonesuch")
 			reportUnknownFuncErr(t, err, p.checkerName, fName)
 		}
+
 		checked[p.checkerName] = true
 	}
 	{
 		p := getParserRegisterEntry[[]string](t, StringSliceCheckerName)
+
 		makers := p.Makers()
 		for _, fName := range makers {
 			mi := p.makers[fName]
 			_, err := mi.MF(nil, "nonesuch")
 			reportUnknownFuncErr(t, err, p.checkerName, fName)
 		}
+
 		checked[p.checkerName] = true
 	}
 

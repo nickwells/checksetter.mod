@@ -32,6 +32,7 @@ func TestAllowedValues(t *testing.T) {
 		stringParser      = checksetter.FindParserOrPanic[string](checksetter.StringCheckerName)
 		stringSliceParser = checksetter.FindParserOrPanic[[]string](checksetter.StringSliceCheckerName)
 	)
+
 	testCases := []struct {
 		testhelper.ID
 		name       string

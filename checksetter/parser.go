@@ -47,6 +47,7 @@ func MakeParser[T any](checkerName string, makers map[string]MakerInfo[T]) (
 	}
 
 	parserRegister[checkerName] = &p
+
 	return p, nil
 }
 
@@ -62,6 +63,7 @@ func (p Parser[T]) Makers() []string {
 	}
 
 	makers.Sort()
+
 	return makers
 }
 
@@ -73,6 +75,7 @@ func (p Parser[T]) Args(makerName string) ([]string, error) {
 	if !ok {
 		return []string{}, fmt.Errorf("Unknown maker: %q", makerName)
 	}
+
 	return mi.Args, nil
 }
 
@@ -106,6 +109,7 @@ func (p Parser[T]) Parse(s string) ([]check.ValCk[T], error) {
 	}
 
 	ckFuncs := make([]check.ValCk[T], 0, len(exprs))
+
 	for _, e := range exprs {
 		f, err := p.ParseExpr(e)
 		if err != nil {
@@ -113,6 +117,7 @@ func (p Parser[T]) Parse(s string) ([]check.ValCk[T], error) {
 				fmt.Errorf("Can't make %s function: %s",
 					p.checkerName, err)
 		}
+
 		ckFuncs = append(ckFuncs, f)
 	}
 
@@ -140,6 +145,7 @@ func (p Parser[T]) CallExprMaker(e *ast.CallExpr) (check.ValCk[T], error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return p.runMaker(e, maker)
 }
 
@@ -176,5 +182,6 @@ func getFuncName(e *ast.CallExpr) (string, error) {
 	if !ok {
 		return "", fmt.Errorf("Syntax error: unexpected call type: %T", e.Fun)
 	}
+
 	return fID.Name, nil
 }

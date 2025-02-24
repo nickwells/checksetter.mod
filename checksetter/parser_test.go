@@ -11,14 +11,17 @@ import (
 )
 
 func TestMakeParser(t *testing.T) {
-	const checkerNameTMP1 = "TestMakeParser-1"
-	const checkerNameTMP2 = "TestMakeParser-2"
+	const (
+		checkerNameTMP1 = "TestMakeParser-1"
+		checkerNameTMP2 = "TestMakeParser-2"
+	)
 
 	type funcArgs struct {
 		funcName string
 		expArgs  []string
 		testhelper.ExpErr
 	}
+
 	testCases := []struct {
 		testhelper.ID
 		testhelper.ExpErr
@@ -93,6 +96,7 @@ func TestMakeParser(t *testing.T) {
 				len(p.Makers()), len(tc.makers))
 			testhelper.DiffStringSlice(t, tc.IDStr(), "maker names",
 				p.Makers(), tc.expMakers)
+
 			for _, ea := range tc.expArgs {
 				args, err := p.Args(ea.funcName)
 				if testhelper.CheckExpErrWithID(t,
@@ -591,6 +595,7 @@ func TestParseInt(t *testing.T) {
 						t.Error("\t: Bad check")
 					}
 				}
+
 				for _, fVal := range tc.failingVals[vcIdx] {
 					if err = vc(fVal); err == nil {
 						t.Log(tc.IDStr())
@@ -1024,6 +1029,7 @@ func TestParseInt64(t *testing.T) {
 						t.Error("\t: Bad check")
 					}
 				}
+
 				for _, fVal := range tc.failingVals[vcIdx] {
 					if err = vc(fVal); err == nil {
 						t.Log(tc.IDStr())
@@ -1376,6 +1382,7 @@ func TestParseFloat64(t *testing.T) {
 						t.Error("\t: Bad check")
 					}
 				}
+
 				for _, fVal := range tc.failingVals[vcIdx] {
 					if err = vc(fVal); err == nil {
 						t.Log(tc.IDStr())
@@ -1855,6 +1862,7 @@ func TestParseString(t *testing.T) {
 						t.Error("\t: Bad check")
 					}
 				}
+
 				for _, fVal := range tc.failingVals[vcIdx] {
 					if err = vc(fVal); err == nil {
 						t.Log(tc.IDStr())
@@ -2262,6 +2270,7 @@ func TestParseStringSlice(t *testing.T) {
 						t.Error("\t: Bad check")
 					}
 				}
+
 				for _, fVal := range tc.failingVals[vcIdx] {
 					if err = vc(fVal); err == nil {
 						t.Log(tc.IDStr())

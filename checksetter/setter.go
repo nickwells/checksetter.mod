@@ -30,6 +30,7 @@ func (s *Setter[T]) SetWithVal(_ string, paramVal string) error {
 	if err != nil {
 		return err
 	}
+
 	*s.Value = v
 	s.paramVal = paramVal
 	s.valSet = true
@@ -46,6 +47,7 @@ func (s Setter[T]) AllowedValues() string {
 // CurrentValue returns the current setting of the parameter value
 func (s Setter[T]) CurrentValue() string {
 	val := ""
+
 	switch len(*s.Value) {
 	case 0:
 		val = "no checks"
@@ -67,18 +69,23 @@ func (s Setter[T]) CurrentValue() string {
 func (s Setter[T]) CheckSetter(name string) {
 	if s.Value == nil {
 		var v T
+
 		panic(
 			psetter.NilValueMessage(name,
 				fmt.Sprintf("checksetter.Setter[%T]", v)))
 	}
+
 	if s.Parser == nil {
 		var v T
+
 		panic(fmt.Sprintf(
 			"The Parser for checksetter.Setter[%T] has not been set",
 			v))
 	}
+
 	if len(s.Parser.Makers()) == 0 {
 		var v T
+
 		panic(fmt.Sprintf(
 			"The Parser for checksetter.Setter[%T] can't make any check-funcs",
 			v))

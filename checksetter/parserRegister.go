@@ -22,6 +22,7 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
+
 	_, err = MakeParser(
 		IntCheckerName,
 		map[string]MakerInfo[int]{
@@ -41,6 +42,7 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
+
 	_, err = MakeParser(
 		Int64CheckerName,
 		map[string]MakerInfo[int64]{
@@ -60,6 +62,7 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
+
 	_, err = MakeParser(
 		StringCheckerName,
 		map[string]MakerInfo[string]{
@@ -80,6 +83,7 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
+
 	_, err = MakeParser(
 		StringSliceCheckerName,
 		map[string]MakerInfo[[]string]{
@@ -123,6 +127,7 @@ func FindParser[T any](checkerName string) (*Parser[T], error) {
 		return nil,
 			fmt.Errorf("There is no Parser registered for %q", checkerName)
 	}
+
 	parser, ok := anyParser.(*Parser[T])
 	if !ok {
 		return nil,
@@ -150,6 +155,8 @@ func ParsersAvailable() []string {
 	for cn := range parserRegister {
 		pa = append(pa, cn)
 	}
+
 	pa.Sort()
+
 	return pa
 }

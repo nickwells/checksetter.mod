@@ -12,13 +12,16 @@ import (
 
 func TestSetter(t *testing.T) {
 	type setterTestType struct{}
-	setterTypeName := "checksetter.Setter[checksetter_test.setterTestType]"
+
+	const setterTypeName = "checksetter.Setter[checksetter_test.setterTestType]"
+
 	badParser, err := checksetter.MakeParser(
 		setterTypeName+"-bad",
 		map[string]checksetter.MakerInfo[setterTestType]{})
 	if err != nil {
 		t.Fatal("couldn't create the bad test Parser: " + err.Error())
 	}
+
 	goodParser, err := checksetter.MakeParser(
 		setterTypeName+"-good",
 		map[string]checksetter.MakerInfo[setterTestType]{
@@ -41,6 +44,7 @@ func TestSetter(t *testing.T) {
 		val, expCrntVal string
 		testhelper.ExpErr
 	}
+
 	testCases := []struct {
 		testhelper.ID
 		testhelper.ExpPanic
@@ -113,14 +117,17 @@ func TestSetter(t *testing.T) {
 			func() {
 				tc.s.CheckSetter(tc.IDStr())
 			})
+
 		if testhelper.CheckExpPanic(t, panicked, panicVal, tc) {
 			t.Log(tc.IDStr())
 			t.Errorf("\t: unexpected panic\n")
 		}
+
 		if !panicked {
 			testhelper.DiffString(t,
 				tc.IDStr(), "Current Value",
 				tc.s.CurrentValue(), tc.expCrntValInit)
+
 			for _, p := range tc.vals {
 				id := fmt.Sprintf("with val: %q", p.val)
 				err := tc.s.SetWithVal("", p.val)
@@ -129,6 +136,7 @@ func TestSetter(t *testing.T) {
 					tc.IDStr(), id,
 					tc.s.CurrentValue(), p.expCrntVal)
 			}
+
 			testhelper.DiffString(t,
 				tc.IDStr(), "Allowed Values",
 				tc.s.AllowedValues(), tc.expAllowedValues)

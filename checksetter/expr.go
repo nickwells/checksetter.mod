@@ -22,10 +22,12 @@ func getInt64(e ast.Expr) (int64, error) {
 	if v.Kind != token.INT {
 		return 0, fmt.Errorf("%q isn't an INT, it's a %s", v.Value, v.Kind)
 	}
+
 	i, err := strconv.ParseInt(v.Value, 0, 64)
 	if err != nil {
 		return 0, fmt.Errorf("Couldn't make an int from %q: %s", v.Value, err)
 	}
+
 	return i, nil
 }
 
@@ -47,10 +49,12 @@ func getFloat64(e ast.Expr) (float64, error) {
 	if v.Kind != token.FLOAT && v.Kind != token.INT {
 		return 0, fmt.Errorf("%q isn't a FLOAT/INT, it's a %s", v.Value, v.Kind)
 	}
+
 	f, err := strconv.ParseFloat(v.Value, 64)
 	if err != nil {
 		return 0, fmt.Errorf("Couldn't make a float %q: %s", v.Value, err)
 	}
+
 	return f, nil
 }
 
@@ -65,6 +69,7 @@ func getString(e ast.Expr) (string, error) {
 	if v.Kind != token.STRING {
 		return "", fmt.Errorf("%q isn't a STRING, it's a %s", v.Value, v.Kind)
 	}
+
 	return strings.Trim(v.Value, `"`), nil
 }
 
@@ -87,6 +92,7 @@ func getElts(s, desc string) (e []ast.Expr, err error) {
 		return nil, fmt.Errorf("unexpected type for the collection of %s: %T",
 			desc, expr)
 	}
+
 	_, ok = cl.Type.(*ast.ArrayType)
 	if !ok {
 		return nil, fmt.Errorf("unexpected type for the array of %s: %T",
@@ -103,6 +109,7 @@ func checkArgCount(e *ast.CallExpr, n int) error {
 		return fmt.Errorf("the call has %d arguments, it should have %d",
 			len(e.Args), n)
 	}
+
 	return nil
 }
 
@@ -116,6 +123,7 @@ func getCheckFuncs[T any](e *ast.CallExpr, checkerName string) (
 	}
 
 	checkFuncs := make([]check.ValCk[T], 0, len(e.Args))
+
 	for i, expr := range e.Args {
 		cf, err := parser.ParseExpr(expr)
 		if err != nil {
@@ -123,6 +131,7 @@ func getCheckFuncs[T any](e *ast.CallExpr, checkerName string) (
 				fmt.Errorf("can't convert argument %d to %s: %s",
 					i, checkerName, err)
 		}
+
 		checkFuncs = append(checkFuncs, cf)
 	}
 
@@ -137,11 +146,13 @@ func getCheckFunc[T any](e *ast.CallExpr, idx int, checkerName string) (
 	if idx < 0 {
 		return nil, fmt.Errorf("Index (%d) must be >= 0", idx)
 	}
+
 	if idx >= len(e.Args) {
 		return nil,
 			fmt.Errorf("Index (%d) is too large, there are only %d arguments",
 				idx, len(e.Args))
 	}
+
 	parser, err := FindParser[T](checkerName)
 	if err != nil {
 		return nil, err
