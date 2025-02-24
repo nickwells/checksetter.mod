@@ -131,7 +131,7 @@ var (
 				}
 			}()
 
-			if err = checkArgCount(e, 2); err != nil {
+			if err = checkArgCount(e, 2); err != nil { //nolint:mnd
 				return nil, err
 			}
 
@@ -180,7 +180,7 @@ var (
 				}
 			}()
 
-			if err = checkArgCount(e, 2); err != nil {
+			if err = checkArgCount(e, 2); err != nil { //nolint:mnd
 				return nil, err
 			}
 
