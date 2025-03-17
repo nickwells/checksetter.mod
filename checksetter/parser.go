@@ -3,7 +3,8 @@ package checksetter
 import (
 	"fmt"
 	"go/ast"
-	"sort"
+	"maps"
+	"slices"
 
 	"github.com/nickwells/check.mod/v2/check"
 )
@@ -56,15 +57,7 @@ func MakeParser[T any](checkerName string, makers map[string]MakerInfo[T]) (
 //
 // This can be used to construct the Allowed Values message for a setter.
 func (p Parser[T]) Makers() []string {
-	makers := sort.StringSlice(make([]string, 0, len(p.makers)))
-
-	for k := range p.makers {
-		makers = append(makers, k)
-	}
-
-	makers.Sort()
-
-	return makers
+	return slices.Sorted(maps.Keys(p.makers))
 }
 
 // Args returns the args that the named maker function takes.

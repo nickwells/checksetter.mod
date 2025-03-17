@@ -2,7 +2,8 @@ package checksetter
 
 import (
 	"fmt"
-	"sort"
+	"maps"
+	"slices"
 )
 
 func init() {
@@ -151,12 +152,5 @@ func FindParserOrPanic[T any](checkerName string) *Parser[T] {
 
 // ParsersAvailable returns a sorted list of all the available parsers
 func ParsersAvailable() []string {
-	pa := sort.StringSlice(make([]string, 0, len(parserRegister)))
-	for cn := range parserRegister {
-		pa = append(pa, cn)
-	}
-
-	pa.Sort()
-
-	return pa
+	return slices.Sorted(maps.Keys(parserRegister))
 }
