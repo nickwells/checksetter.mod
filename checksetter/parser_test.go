@@ -37,14 +37,14 @@ func TestMakeParser(t *testing.T) {
 			expArgs: []funcArgs{
 				{
 					funcName: "Any",
-					ExpErr:   testhelper.MkExpErr(`Unknown maker: "Any"`),
+					ExpErr:   testhelper.MkExpErr(`unknown maker: "Any"`),
 				},
 			},
 		},
 		{
 			ID: testhelper.MkID("bad - duplicate"),
 			ExpErr: testhelper.MkExpErr(
-				`A Parser for "` + checkerNameTMP1 + `" already exists`),
+				`a Parser for "` + checkerNameTMP1 + `" already exists`),
 			checkerName: checkerNameTMP1,
 			makers:      map[string]checksetter.MakerInfo[int]{},
 		},
@@ -73,7 +73,7 @@ func TestMakeParser(t *testing.T) {
 			expArgs: []funcArgs{
 				{
 					funcName: "Any",
-					ExpErr:   testhelper.MkExpErr(`Unknown maker: "Any"`),
+					ExpErr:   testhelper.MkExpErr(`unknown maker: "Any"`),
 				},
 				{
 					funcName: "func1",
@@ -129,7 +129,7 @@ func TestFindParser(t *testing.T) {
 	}
 
 	badTypeMsg := fmt.Sprintf(
-		"The Parser for %q is of the wrong type (%s)", checkerName, expType)
+		"the Parser for %q is of the wrong type (%s)", checkerName, expType)
 	badTypeID := fmt.Sprintf("retrieving %q as a string", checkerName)
 	badTypeErr := struct {
 		testhelper.ID
@@ -155,7 +155,7 @@ func TestFindParser(t *testing.T) {
 	testhelper.CheckExpPanicError(t, panicked, panicVal, badTypePanic)
 
 	noParserMsg := fmt.Sprintf(
-		"There is no Parser registered for %q", badCheckerName)
+		"there is no Parser registered for %q", badCheckerName)
 	noParserID := fmt.Sprintf("retrieving %q", badCheckerName)
 	noParserErr := struct {
 		testhelper.ID
@@ -192,14 +192,14 @@ func TestParseInt(t *testing.T) {
 	}{
 		{
 			ID: testhelper.MkID("bad: no-such name"),
-			ExpErr: testhelper.MkExpErr("Can't make int-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make int-checker function:" +
 				" nonesuch is an unknown function"),
 			expr: "nonesuch",
 		},
 		{
 			ID: testhelper.MkID("bad: not a named function"),
-			ExpErr: testhelper.MkExpErr("Can't make int-checker function:" +
-				" Syntax error: unexpected call type: *ast.FuncLit"),
+			ExpErr: testhelper.MkExpErr("can't make int-checker function:" +
+				" syntax error: unexpected call type: *ast.FuncLit"),
 			expr: "func(){}()",
 		},
 		{
@@ -227,7 +227,7 @@ func TestParseInt(t *testing.T) {
 		{
 			ID: testhelper.MkID("no-params: bad: with params"),
 			ExpErr: testhelper.MkExpErr(
-				"Can't make int-checker function: OK()",
+				"can't make int-checker function: OK()",
 				"the call has 1 arguments, it should have 0"),
 			expr:   "OK(42)",
 			expLen: 1,
@@ -250,21 +250,21 @@ func TestParseInt(t *testing.T) {
 		},
 		{
 			ID: testhelper.MkID("1 int param: bad: EQ, bad args"),
-			ExpErr: testhelper.MkExpErr("Can't make int-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make int-checker function:" +
 				" EQ(int):" +
 				" \"`hello`\" isn't an INT, it's a STRING"),
 			expr: "EQ(`hello`)",
 		},
 		{
 			ID: testhelper.MkID("1 int param: bad: EQ, too few args"),
-			ExpErr: testhelper.MkExpErr("Can't make int-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make int-checker function:" +
 				" EQ(int):" +
 				" the call has 0 arguments, it should have 1"),
 			expr: "EQ()",
 		},
 		{
 			ID: testhelper.MkID("1 int param: bad: EQ, too many args"),
-			ExpErr: testhelper.MkExpErr("Can't make int-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make int-checker function:" +
 				" EQ(int):" +
 				" the call has 2 arguments, it should have 1"),
 			expr: "EQ(1, 2)",
@@ -278,21 +278,21 @@ func TestParseInt(t *testing.T) {
 		},
 		{
 			ID: testhelper.MkID("1 int param: bad: GT, bad args"),
-			ExpErr: testhelper.MkExpErr("Can't make int-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make int-checker function:" +
 				" GT(int):" +
 				" \"`hello`\" isn't an INT, it's a STRING"),
 			expr: "GT(`hello`)",
 		},
 		{
 			ID: testhelper.MkID("1 int param: bad: GT, too few args"),
-			ExpErr: testhelper.MkExpErr("Can't make int-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make int-checker function:" +
 				" GT(int):" +
 				" the call has 0 arguments, it should have 1"),
 			expr: "GT()",
 		},
 		{
 			ID: testhelper.MkID("1 int param: bad: GT, too many args"),
-			ExpErr: testhelper.MkExpErr("Can't make int-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make int-checker function:" +
 				" GT(int):" +
 				" the call has 2 arguments, it should have 1"),
 			expr: "GT(1, 2)",
@@ -306,21 +306,21 @@ func TestParseInt(t *testing.T) {
 		},
 		{
 			ID: testhelper.MkID("1 int param: bad: GE, bad args"),
-			ExpErr: testhelper.MkExpErr("Can't make int-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make int-checker function:" +
 				" GE(int):" +
 				" \"`hello`\" isn't an INT, it's a STRING"),
 			expr: "GE(`hello`)",
 		},
 		{
 			ID: testhelper.MkID("1 int param: bad: GE, too few args"),
-			ExpErr: testhelper.MkExpErr("Can't make int-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make int-checker function:" +
 				" GE(int):" +
 				" the call has 0 arguments, it should have 1"),
 			expr: "GE()",
 		},
 		{
 			ID: testhelper.MkID("1 int param: bad: GE, too many args"),
-			ExpErr: testhelper.MkExpErr("Can't make int-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make int-checker function:" +
 				" GE(int):" +
 				" the call has 2 arguments, it should have 1"),
 			expr: "GE(1, 2)",
@@ -334,21 +334,21 @@ func TestParseInt(t *testing.T) {
 		},
 		{
 			ID: testhelper.MkID("1 int param: bad: LT, bad args"),
-			ExpErr: testhelper.MkExpErr("Can't make int-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make int-checker function:" +
 				" LT(int):" +
 				" \"`hello`\" isn't an INT, it's a STRING"),
 			expr: "LT(`hello`)",
 		},
 		{
 			ID: testhelper.MkID("1 int param: bad: LT, too few args"),
-			ExpErr: testhelper.MkExpErr("Can't make int-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make int-checker function:" +
 				" LT(int):" +
 				" the call has 0 arguments, it should have 1"),
 			expr: "LT()",
 		},
 		{
 			ID: testhelper.MkID("1 int param: bad: LT, too many args"),
-			ExpErr: testhelper.MkExpErr("Can't make int-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make int-checker function:" +
 				" LT(int):" +
 				" the call has 2 arguments, it should have 1"),
 			expr: "LT(1, 2)",
@@ -362,21 +362,21 @@ func TestParseInt(t *testing.T) {
 		},
 		{
 			ID: testhelper.MkID("1 int param: bad: LE, bad args"),
-			ExpErr: testhelper.MkExpErr("Can't make int-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make int-checker function:" +
 				" LE(int):" +
 				" \"`hello`\" isn't an INT, it's a STRING"),
 			expr: "LE(`hello`)",
 		},
 		{
 			ID: testhelper.MkID("1 int param: bad: LE, too few args"),
-			ExpErr: testhelper.MkExpErr("Can't make int-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make int-checker function:" +
 				" LE(int):" +
 				" the call has 0 arguments, it should have 1"),
 			expr: "LE()",
 		},
 		{
 			ID: testhelper.MkID("1 int param: bad: LE, too many args"),
-			ExpErr: testhelper.MkExpErr("Can't make int-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make int-checker function:" +
 				" LE(int):" +
 				" the call has 2 arguments, it should have 1"),
 			expr: "LE(1, 2)",
@@ -390,21 +390,21 @@ func TestParseInt(t *testing.T) {
 		},
 		{
 			ID: testhelper.MkID("1 int param: bad: Divides, bad args"),
-			ExpErr: testhelper.MkExpErr("Can't make int-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make int-checker function:" +
 				" Divides(int):" +
 				" \"`hello`\" isn't an INT, it's a STRING"),
 			expr: "Divides(`hello`)",
 		},
 		{
 			ID: testhelper.MkID("1 int param: bad: Divides, too few args"),
-			ExpErr: testhelper.MkExpErr("Can't make int-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make int-checker function:" +
 				" Divides(int):" +
 				" the call has 0 arguments, it should have 1"),
 			expr: "Divides()",
 		},
 		{
 			ID: testhelper.MkID("1 int param: bad: Divides, too many args"),
-			ExpErr: testhelper.MkExpErr("Can't make int-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make int-checker function:" +
 				" Divides(int):" +
 				" the call has 2 arguments, it should have 1"),
 			expr: "Divides(1, 2)",
@@ -418,21 +418,21 @@ func TestParseInt(t *testing.T) {
 		},
 		{
 			ID: testhelper.MkID("1 int param: bad: IsAMultiple, bad args"),
-			ExpErr: testhelper.MkExpErr("Can't make int-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make int-checker function:" +
 				" IsAMultiple(int):" +
 				" \"`hello`\" isn't an INT, it's a STRING"),
 			expr: "IsAMultiple(`hello`)",
 		},
 		{
 			ID: testhelper.MkID("1 int param: bad: IsAMultiple, too few args"),
-			ExpErr: testhelper.MkExpErr("Can't make int-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make int-checker function:" +
 				" IsAMultiple(int):" +
 				" the call has 0 arguments, it should have 1"),
 			expr: "IsAMultiple()",
 		},
 		{
 			ID: testhelper.MkID("1 int param: bad: IsAMultiple, too many args"),
-			ExpErr: testhelper.MkExpErr("Can't make int-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make int-checker function:" +
 				" IsAMultiple(int):" +
 				" the call has 2 arguments, it should have 1"),
 			expr: "IsAMultiple(1, 2)",
@@ -461,21 +461,21 @@ func TestParseInt(t *testing.T) {
 		},
 		{
 			ID: testhelper.MkID("2 int param: bad: Between, bad args (1st)"),
-			ExpErr: testhelper.MkExpErr("Can't make int-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make int-checker function:" +
 				" Between(int, int):" +
 				" \"`hello`\" isn't an INT, it's a STRING"),
 			expr: "Between(`hello`, 1)",
 		},
 		{
 			ID: testhelper.MkID("2 int param: bad: Between, bad args (2nd)"),
-			ExpErr: testhelper.MkExpErr("Can't make int-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make int-checker function:" +
 				" Between(int, int):" +
 				" \"`hello`\" isn't an INT, it's a STRING"),
 			expr: "Between(1, `hello`)",
 		},
 		{
 			ID: testhelper.MkID("2 int param: bad: Between, bad args"),
-			ExpErr: testhelper.MkExpErr("Can't make int-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make int-checker function:" +
 				" Between(int, int):" +
 				" Impossible checks passed to ValBetween:" +
 				" the lower limit (12) must be less than the upper limit (10)"),
@@ -483,14 +483,14 @@ func TestParseInt(t *testing.T) {
 		},
 		{
 			ID: testhelper.MkID("2 int param: bad: Between, too few args"),
-			ExpErr: testhelper.MkExpErr("Can't make int-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make int-checker function:" +
 				" Between(int, int):" +
 				" the call has 1 arguments, it should have 2"),
 			expr: "Between(9)",
 		},
 		{
 			ID: testhelper.MkID("2 int param: bad: Between, too many args"),
-			ExpErr: testhelper.MkExpErr("Can't make int-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make int-checker function:" +
 				" Between(int, int):" +
 				" the call has 3 arguments, it should have 2"),
 			expr: "Between(9, 10, 11)",
@@ -504,7 +504,7 @@ func TestParseInt(t *testing.T) {
 		},
 		{
 			ID: testhelper.MkID("int-ckr, str param: bad: Not, bad args (1st)"),
-			ExpErr: testhelper.MkExpErr("Can't make int-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make int-checker function:" +
 				" Not(int-checker, string):" +
 				" can't convert argument 0 to int-checker:" +
 				" unexpected type: *ast.BasicLit"),
@@ -512,21 +512,21 @@ func TestParseInt(t *testing.T) {
 		},
 		{
 			ID: testhelper.MkID("int-ckr, str param: bad: Not, bad args (2nd)"),
-			ExpErr: testhelper.MkExpErr("Can't make int-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make int-checker function:" +
 				" Not(int-checker, string):" +
 				" \"1\" isn't a STRING, it's a INT"),
 			expr: "Not(EQ(1), 1)",
 		},
 		{
 			ID: testhelper.MkID("int-ckr, str param: bad: Not, too many args"),
-			ExpErr: testhelper.MkExpErr("Can't make int-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make int-checker function:" +
 				" Not(int-checker, string):" +
 				" the call has 3 arguments, it should have 2"),
 			expr: "Not(EQ(1), `Hello`, `World`)",
 		},
 		{
 			ID: testhelper.MkID("int-ckr, str param: bad: Not, too few args"),
-			ExpErr: testhelper.MkExpErr("Can't make int-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make int-checker function:" +
 				" Not(int-checker, string):" +
 				" the call has 1 arguments, it should have 2"),
 			expr: "Not(EQ(1))",
@@ -547,7 +547,7 @@ func TestParseInt(t *testing.T) {
 		},
 		{
 			ID: testhelper.MkID("...int-ckr param: bad: And: not CF"),
-			ExpErr: testhelper.MkExpErr("Can't make int-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make int-checker function:" +
 				" And(..., int-checker):" +
 				" can't convert argument 1 to int-checker:" +
 				" nonesuch is an unknown function"),
@@ -569,7 +569,7 @@ func TestParseInt(t *testing.T) {
 		},
 		{
 			ID: testhelper.MkID("...int-ckr param: bad: Or: not CF"),
-			ExpErr: testhelper.MkExpErr("Can't make int-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make int-checker function:" +
 				" Or(..., int-checker):" +
 				" can't convert argument 1 to int-checker:" +
 				" nonesuch is an unknown function"),
@@ -621,14 +621,14 @@ func TestParseInt64(t *testing.T) {
 	}{
 		{
 			ID: testhelper.MkID("bad: no-such name"),
-			ExpErr: testhelper.MkExpErr("Can't make int64-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make int64-checker function:" +
 				" nonesuch is an unknown function"),
 			expr: "nonesuch",
 		},
 		{
 			ID: testhelper.MkID("bad: not a named function"),
-			ExpErr: testhelper.MkExpErr("Can't make int64-checker function:" +
-				" Syntax error: unexpected call type: *ast.FuncLit"),
+			ExpErr: testhelper.MkExpErr("can't make int64-checker function:" +
+				" syntax error: unexpected call type: *ast.FuncLit"),
 			expr: "func(){}()",
 		},
 		{
@@ -656,7 +656,7 @@ func TestParseInt64(t *testing.T) {
 		{
 			ID: testhelper.MkID("no-params: bad: with params"),
 			ExpErr: testhelper.MkExpErr(
-				"Can't make int64-checker function: OK()",
+				"can't make int64-checker function: OK()",
 				"the call has 1 arguments, it should have 0"),
 			expr:   "OK(42)",
 			expLen: 1,
@@ -679,21 +679,21 @@ func TestParseInt64(t *testing.T) {
 		},
 		{
 			ID: testhelper.MkID("1 int64 param: bad: EQ, bad args"),
-			ExpErr: testhelper.MkExpErr("Can't make int64-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make int64-checker function:" +
 				" EQ(int64):" +
 				" \"`hello`\" isn't an INT, it's a STRING"),
 			expr: "EQ(`hello`)",
 		},
 		{
 			ID: testhelper.MkID("1 int64 param: bad: EQ, too few args"),
-			ExpErr: testhelper.MkExpErr("Can't make int64-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make int64-checker function:" +
 				" EQ(int64):" +
 				" the call has 0 arguments, it should have 1"),
 			expr: "EQ()",
 		},
 		{
 			ID: testhelper.MkID("1 int64 param: bad: EQ, too many args"),
-			ExpErr: testhelper.MkExpErr("Can't make int64-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make int64-checker function:" +
 				" EQ(int64):" +
 				" the call has 2 arguments, it should have 1"),
 			expr: "EQ(1, 2)",
@@ -707,21 +707,21 @@ func TestParseInt64(t *testing.T) {
 		},
 		{
 			ID: testhelper.MkID("1 int64 param: bad: GT, bad args"),
-			ExpErr: testhelper.MkExpErr("Can't make int64-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make int64-checker function:" +
 				" GT(int64):" +
 				" \"`hello`\" isn't an INT, it's a STRING"),
 			expr: "GT(`hello`)",
 		},
 		{
 			ID: testhelper.MkID("1 int64 param: bad: GT, too few args"),
-			ExpErr: testhelper.MkExpErr("Can't make int64-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make int64-checker function:" +
 				" GT(int64):" +
 				" the call has 0 arguments, it should have 1"),
 			expr: "GT()",
 		},
 		{
 			ID: testhelper.MkID("1 int64 param: bad: GT, too many args"),
-			ExpErr: testhelper.MkExpErr("Can't make int64-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make int64-checker function:" +
 				" GT(int64):" +
 				" the call has 2 arguments, it should have 1"),
 			expr: "GT(1, 2)",
@@ -735,21 +735,21 @@ func TestParseInt64(t *testing.T) {
 		},
 		{
 			ID: testhelper.MkID("1 int64 param: bad: GE, bad args"),
-			ExpErr: testhelper.MkExpErr("Can't make int64-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make int64-checker function:" +
 				" GE(int64):" +
 				" \"`hello`\" isn't an INT, it's a STRING"),
 			expr: "GE(`hello`)",
 		},
 		{
 			ID: testhelper.MkID("1 int64 param: bad: GE, too few args"),
-			ExpErr: testhelper.MkExpErr("Can't make int64-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make int64-checker function:" +
 				" GE(int64):" +
 				" the call has 0 arguments, it should have 1"),
 			expr: "GE()",
 		},
 		{
 			ID: testhelper.MkID("1 int64 param: bad: GE, too many args"),
-			ExpErr: testhelper.MkExpErr("Can't make int64-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make int64-checker function:" +
 				" GE(int64):" +
 				" the call has 2 arguments, it should have 1"),
 			expr: "GE(1, 2)",
@@ -763,21 +763,21 @@ func TestParseInt64(t *testing.T) {
 		},
 		{
 			ID: testhelper.MkID("1 int64 param: bad: LT, bad args"),
-			ExpErr: testhelper.MkExpErr("Can't make int64-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make int64-checker function:" +
 				" LT(int64):" +
 				" \"`hello`\" isn't an INT, it's a STRING"),
 			expr: "LT(`hello`)",
 		},
 		{
 			ID: testhelper.MkID("1 int64 param: bad: LT, too few args"),
-			ExpErr: testhelper.MkExpErr("Can't make int64-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make int64-checker function:" +
 				" LT(int64):" +
 				" the call has 0 arguments, it should have 1"),
 			expr: "LT()",
 		},
 		{
 			ID: testhelper.MkID("1 int64 param: bad: LT, too many args"),
-			ExpErr: testhelper.MkExpErr("Can't make int64-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make int64-checker function:" +
 				" LT(int64):" +
 				" the call has 2 arguments, it should have 1"),
 			expr: "LT(1, 2)",
@@ -791,21 +791,21 @@ func TestParseInt64(t *testing.T) {
 		},
 		{
 			ID: testhelper.MkID("1 int64 param: bad: LE, bad args"),
-			ExpErr: testhelper.MkExpErr("Can't make int64-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make int64-checker function:" +
 				" LE(int64):" +
 				" \"`hello`\" isn't an INT, it's a STRING"),
 			expr: "LE(`hello`)",
 		},
 		{
 			ID: testhelper.MkID("1 int64 param: bad: LE, too few args"),
-			ExpErr: testhelper.MkExpErr("Can't make int64-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make int64-checker function:" +
 				" LE(int64):" +
 				" the call has 0 arguments, it should have 1"),
 			expr: "LE()",
 		},
 		{
 			ID: testhelper.MkID("1 int64 param: bad: LE, too many args"),
-			ExpErr: testhelper.MkExpErr("Can't make int64-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make int64-checker function:" +
 				" LE(int64):" +
 				" the call has 2 arguments, it should have 1"),
 			expr: "LE(1, 2)",
@@ -819,21 +819,21 @@ func TestParseInt64(t *testing.T) {
 		},
 		{
 			ID: testhelper.MkID("1 int64 param: bad: Divides, bad args"),
-			ExpErr: testhelper.MkExpErr("Can't make int64-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make int64-checker function:" +
 				" Divides(int64):" +
 				" \"`hello`\" isn't an INT, it's a STRING"),
 			expr: "Divides(`hello`)",
 		},
 		{
 			ID: testhelper.MkID("1 int64 param: bad: Divides, too few args"),
-			ExpErr: testhelper.MkExpErr("Can't make int64-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make int64-checker function:" +
 				" Divides(int64):" +
 				" the call has 0 arguments, it should have 1"),
 			expr: "Divides()",
 		},
 		{
 			ID: testhelper.MkID("1 int64 param: bad: Divides, too many args"),
-			ExpErr: testhelper.MkExpErr("Can't make int64-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make int64-checker function:" +
 				" Divides(int64):" +
 				" the call has 2 arguments, it should have 1"),
 			expr: "Divides(1, 2)",
@@ -847,7 +847,7 @@ func TestParseInt64(t *testing.T) {
 		},
 		{
 			ID: testhelper.MkID("1 int64 param: bad: IsAMultiple, bad args"),
-			ExpErr: testhelper.MkExpErr("Can't make int64-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make int64-checker function:" +
 				" IsAMultiple(int64):" +
 				" \"`hello`\" isn't an INT, it's a STRING"),
 			expr: "IsAMultiple(`hello`)",
@@ -855,7 +855,7 @@ func TestParseInt64(t *testing.T) {
 		{
 			ID: testhelper.MkID(
 				"1 int64 param: bad: IsAMultiple, too few args"),
-			ExpErr: testhelper.MkExpErr("Can't make int64-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make int64-checker function:" +
 				" IsAMultiple(int64):" +
 				" the call has 0 arguments, it should have 1"),
 			expr: "IsAMultiple()",
@@ -863,7 +863,7 @@ func TestParseInt64(t *testing.T) {
 		{
 			ID: testhelper.MkID(
 				"1 int64 param: bad: IsAMultiple, too many args"),
-			ExpErr: testhelper.MkExpErr("Can't make int64-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make int64-checker function:" +
 				" IsAMultiple(int64):" +
 				" the call has 2 arguments, it should have 1"),
 			expr: "IsAMultiple(1, 2)",
@@ -892,21 +892,21 @@ func TestParseInt64(t *testing.T) {
 		},
 		{
 			ID: testhelper.MkID("2 int64 param: bad: Between, bad args (1st)"),
-			ExpErr: testhelper.MkExpErr("Can't make int64-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make int64-checker function:" +
 				" Between(int64, int64):" +
 				" \"`hello`\" isn't an INT, it's a STRING"),
 			expr: "Between(`hello`, 1)",
 		},
 		{
 			ID: testhelper.MkID("2 int64 param: bad: Between, bad args (2nd)"),
-			ExpErr: testhelper.MkExpErr("Can't make int64-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make int64-checker function:" +
 				" Between(int64, int64):" +
 				" \"`hello`\" isn't an INT, it's a STRING"),
 			expr: "Between(1, `hello`)",
 		},
 		{
 			ID: testhelper.MkID("2 int64 param: bad: Between, bad args"),
-			ExpErr: testhelper.MkExpErr("Can't make int64-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make int64-checker function:" +
 				" Between(int64, int64):" +
 				" Impossible checks passed to ValBetween:" +
 				" the lower limit (12) must be less than the upper limit (10)"),
@@ -914,14 +914,14 @@ func TestParseInt64(t *testing.T) {
 		},
 		{
 			ID: testhelper.MkID("2 int64 param: bad: Between, too few args"),
-			ExpErr: testhelper.MkExpErr("Can't make int64-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make int64-checker function:" +
 				" Between(int64, int64):" +
 				" the call has 1 arguments, it should have 2"),
 			expr: "Between(9)",
 		},
 		{
 			ID: testhelper.MkID("2 int64 param: bad: Between, too many args"),
-			ExpErr: testhelper.MkExpErr("Can't make int64-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make int64-checker function:" +
 				" Between(int64, int64):" +
 				" the call has 3 arguments, it should have 2"),
 			expr: "Between(9, 10, 11)",
@@ -936,7 +936,7 @@ func TestParseInt64(t *testing.T) {
 		{
 			ID: testhelper.MkID(
 				"int64-ckr, str param: bad: Not, bad args (1st)"),
-			ExpErr: testhelper.MkExpErr("Can't make int64-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make int64-checker function:" +
 				" Not(int64-checker, string):" +
 				" can't convert argument 0 to int64-checker:" +
 				" unexpected type: *ast.BasicLit"),
@@ -945,7 +945,7 @@ func TestParseInt64(t *testing.T) {
 		{
 			ID: testhelper.MkID(
 				"int64-ckr, str param: bad: Not, bad args (2nd)"),
-			ExpErr: testhelper.MkExpErr("Can't make int64-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make int64-checker function:" +
 				" Not(int64-checker, string):" +
 				" \"1\" isn't a STRING, it's a INT"),
 			expr: "Not(EQ(1), 1)",
@@ -953,14 +953,14 @@ func TestParseInt64(t *testing.T) {
 		{
 			ID: testhelper.MkID(
 				"int64-ckr, str param: bad: Not, too many args"),
-			ExpErr: testhelper.MkExpErr("Can't make int64-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make int64-checker function:" +
 				" Not(int64-checker, string):" +
 				" the call has 3 arguments, it should have 2"),
 			expr: "Not(EQ(1), `Hello`, `World`)",
 		},
 		{
 			ID: testhelper.MkID("int64-ckr, str param: bad: Not, too few args"),
-			ExpErr: testhelper.MkExpErr("Can't make int64-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make int64-checker function:" +
 				" Not(int64-checker, string):" +
 				" the call has 1 arguments, it should have 2"),
 			expr: "Not(EQ(1))",
@@ -981,7 +981,7 @@ func TestParseInt64(t *testing.T) {
 		},
 		{
 			ID: testhelper.MkID("...int64-ckr param: bad: And: not CF"),
-			ExpErr: testhelper.MkExpErr("Can't make int64-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make int64-checker function:" +
 				" And(..., int64-checker):" +
 				" can't convert argument 1 to int64-checker:" +
 				" nonesuch is an unknown function"),
@@ -1003,7 +1003,7 @@ func TestParseInt64(t *testing.T) {
 		},
 		{
 			ID: testhelper.MkID("...int64-ckr param: bad: Or: not CF"),
-			ExpErr: testhelper.MkExpErr("Can't make int64-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make int64-checker function:" +
 				" Or(..., int64-checker):" +
 				" can't convert argument 1 to int64-checker:" +
 				" nonesuch is an unknown function"),
@@ -1055,14 +1055,14 @@ func TestParseFloat64(t *testing.T) {
 	}{
 		{
 			ID: testhelper.MkID("bad: no-such name"),
-			ExpErr: testhelper.MkExpErr("Can't make float64-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make float64-checker function:" +
 				" nonesuch is an unknown function"),
 			expr: "nonesuch",
 		},
 		{
 			ID: testhelper.MkID("bad: not a named function"),
-			ExpErr: testhelper.MkExpErr("Can't make float64-checker function:" +
-				" Syntax error: unexpected call type: *ast.FuncLit"),
+			ExpErr: testhelper.MkExpErr("can't make float64-checker function:" +
+				" syntax error: unexpected call type: *ast.FuncLit"),
 			expr: "func(){}()",
 		},
 		{
@@ -1090,7 +1090,7 @@ func TestParseFloat64(t *testing.T) {
 		{
 			ID: testhelper.MkID("no-params: bad: with params"),
 			ExpErr: testhelper.MkExpErr(
-				"Can't make float64-checker function: OK()",
+				"can't make float64-checker function: OK()",
 				"the call has 1 arguments, it should have 0"),
 			expr:   "OK(42)",
 			expLen: 1,
@@ -1113,21 +1113,21 @@ func TestParseFloat64(t *testing.T) {
 		},
 		{
 			ID: testhelper.MkID("1 float64 param: bad: GT, bad args"),
-			ExpErr: testhelper.MkExpErr("Can't make float64-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make float64-checker function:" +
 				" GT(float64):" +
 				" \"`hello`\" isn't a FLOAT/INT, it's a STRING"),
 			expr: "GT(`hello`)",
 		},
 		{
 			ID: testhelper.MkID("1 float64 param: bad: GT, too few args"),
-			ExpErr: testhelper.MkExpErr("Can't make float64-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make float64-checker function:" +
 				" GT(float64):" +
 				" the call has 0 arguments, it should have 1"),
 			expr: "GT()",
 		},
 		{
 			ID: testhelper.MkID("1 float64 param: bad: GT, too many args"),
-			ExpErr: testhelper.MkExpErr("Can't make float64-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make float64-checker function:" +
 				" GT(float64):" +
 				" the call has 2 arguments, it should have 1"),
 			expr: "GT(1, 2)",
@@ -1141,21 +1141,21 @@ func TestParseFloat64(t *testing.T) {
 		},
 		{
 			ID: testhelper.MkID("1 float64 param: bad: GE, bad args"),
-			ExpErr: testhelper.MkExpErr("Can't make float64-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make float64-checker function:" +
 				" GE(float64):" +
 				" \"`hello`\" isn't a FLOAT/INT, it's a STRING"),
 			expr: "GE(`hello`)",
 		},
 		{
 			ID: testhelper.MkID("1 float64 param: bad: GE, too few args"),
-			ExpErr: testhelper.MkExpErr("Can't make float64-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make float64-checker function:" +
 				" GE(float64):" +
 				" the call has 0 arguments, it should have 1"),
 			expr: "GE()",
 		},
 		{
 			ID: testhelper.MkID("1 float64 param: bad: GE, too many args"),
-			ExpErr: testhelper.MkExpErr("Can't make float64-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make float64-checker function:" +
 				" GE(float64):" +
 				" the call has 2 arguments, it should have 1"),
 			expr: "GE(1, 2)",
@@ -1169,21 +1169,21 @@ func TestParseFloat64(t *testing.T) {
 		},
 		{
 			ID: testhelper.MkID("1 float64 param: bad: LT, bad args"),
-			ExpErr: testhelper.MkExpErr("Can't make float64-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make float64-checker function:" +
 				" LT(float64):" +
 				" \"`hello`\" isn't a FLOAT/INT, it's a STRING"),
 			expr: "LT(`hello`)",
 		},
 		{
 			ID: testhelper.MkID("1 float64 param: bad: LT, too few args"),
-			ExpErr: testhelper.MkExpErr("Can't make float64-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make float64-checker function:" +
 				" LT(float64):" +
 				" the call has 0 arguments, it should have 1"),
 			expr: "LT()",
 		},
 		{
 			ID: testhelper.MkID("1 float64 param: bad: LT, too many args"),
-			ExpErr: testhelper.MkExpErr("Can't make float64-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make float64-checker function:" +
 				" LT(float64):" +
 				" the call has 2 arguments, it should have 1"),
 			expr: "LT(1, 2)",
@@ -1197,21 +1197,21 @@ func TestParseFloat64(t *testing.T) {
 		},
 		{
 			ID: testhelper.MkID("1 float64 param: bad: LE, bad args"),
-			ExpErr: testhelper.MkExpErr("Can't make float64-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make float64-checker function:" +
 				" LE(float64):" +
 				" \"`hello`\" isn't a FLOAT/INT, it's a STRING"),
 			expr: "LE(`hello`)",
 		},
 		{
 			ID: testhelper.MkID("1 float64 param: bad: LE, too few args"),
-			ExpErr: testhelper.MkExpErr("Can't make float64-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make float64-checker function:" +
 				" LE(float64):" +
 				" the call has 0 arguments, it should have 1"),
 			expr: "LE()",
 		},
 		{
 			ID: testhelper.MkID("1 float64 param: bad: LE, too many args"),
-			ExpErr: testhelper.MkExpErr("Can't make float64-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make float64-checker function:" +
 				" LE(float64):" +
 				" the call has 2 arguments, it should have 1"),
 			expr: "LE(1, 2)",
@@ -1239,7 +1239,7 @@ func TestParseFloat64(t *testing.T) {
 		{
 			ID: testhelper.MkID(
 				"2 float64 param: bad: Between, bad args (1st)"),
-			ExpErr: testhelper.MkExpErr("Can't make float64-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make float64-checker function:" +
 				" Between(float64, float64):" +
 				" \"`hello`\" isn't a FLOAT/INT, it's a STRING"),
 			expr: "Between(`hello`, 1)",
@@ -1247,14 +1247,14 @@ func TestParseFloat64(t *testing.T) {
 		{
 			ID: testhelper.MkID(
 				"2 float64 param: bad: Between, bad args (2nd)"),
-			ExpErr: testhelper.MkExpErr("Can't make float64-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make float64-checker function:" +
 				" Between(float64, float64):" +
 				" \"`hello`\" isn't a FLOAT/INT, it's a STRING"),
 			expr: "Between(1, `hello`)",
 		},
 		{
 			ID: testhelper.MkID("2 float64 param: bad: Between, bad args"),
-			ExpErr: testhelper.MkExpErr("Can't make float64-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make float64-checker function:" +
 				" Between(float64, float64):" +
 				" Impossible checks passed to ValBetween:" +
 				" the lower limit (12) must be less than the upper limit (10)"),
@@ -1262,14 +1262,14 @@ func TestParseFloat64(t *testing.T) {
 		},
 		{
 			ID: testhelper.MkID("2 float64 param: bad: Between, too few args"),
-			ExpErr: testhelper.MkExpErr("Can't make float64-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make float64-checker function:" +
 				" Between(float64, float64):" +
 				" the call has 1 arguments, it should have 2"),
 			expr: "Between(9)",
 		},
 		{
 			ID: testhelper.MkID("2 float64 param: bad: Between, too many args"),
-			ExpErr: testhelper.MkExpErr("Can't make float64-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make float64-checker function:" +
 				" Between(float64, float64):" +
 				" the call has 3 arguments, it should have 2"),
 			expr: "Between(9, 10, 11)",
@@ -1284,7 +1284,7 @@ func TestParseFloat64(t *testing.T) {
 		{
 			ID: testhelper.MkID(
 				"float64-ckr, str param: bad: Not, bad args (1st)"),
-			ExpErr: testhelper.MkExpErr("Can't make float64-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make float64-checker function:" +
 				" Not(float64-checker, string):" +
 				" can't convert argument 0 to float64-checker:" +
 				" unexpected type: *ast.BasicLit"),
@@ -1293,7 +1293,7 @@ func TestParseFloat64(t *testing.T) {
 		{
 			ID: testhelper.MkID(
 				"float64-ckr, str param: bad: Not, bad args (2nd)"),
-			ExpErr: testhelper.MkExpErr("Can't make float64-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make float64-checker function:" +
 				" Not(float64-checker, string):" +
 				" \"1\" isn't a STRING, it's a INT"),
 			expr: "Not(GE(1), 1)",
@@ -1301,7 +1301,7 @@ func TestParseFloat64(t *testing.T) {
 		{
 			ID: testhelper.MkID(
 				"float64-ckr, str param: bad: Not, too many args"),
-			ExpErr: testhelper.MkExpErr("Can't make float64-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make float64-checker function:" +
 				" Not(float64-checker, string):" +
 				" the call has 3 arguments, it should have 2"),
 			expr: "Not(GE(1), `Hello`, `World`)",
@@ -1309,7 +1309,7 @@ func TestParseFloat64(t *testing.T) {
 		{
 			ID: testhelper.MkID(
 				"float64-ckr, str param: bad: Not, too few args"),
-			ExpErr: testhelper.MkExpErr("Can't make float64-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make float64-checker function:" +
 				" Not(float64-checker, string):" +
 				" the call has 1 arguments, it should have 2"),
 			expr: "Not(GE(1))",
@@ -1332,7 +1332,7 @@ func TestParseFloat64(t *testing.T) {
 		},
 		{
 			ID: testhelper.MkID("...float64-ckr param: bad: And: not CF"),
-			ExpErr: testhelper.MkExpErr("Can't make float64-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make float64-checker function:" +
 				" And(..., float64-checker):" +
 				" can't convert argument 1 to float64-checker:" +
 				" nonesuch is an unknown function"),
@@ -1356,7 +1356,7 @@ func TestParseFloat64(t *testing.T) {
 		},
 		{
 			ID: testhelper.MkID("...float64-ckr param: bad: Or: not CF"),
-			ExpErr: testhelper.MkExpErr("Can't make float64-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make float64-checker function:" +
 				" Or(..., float64-checker):" +
 				" can't convert argument 1 to float64-checker:" +
 				" nonesuch is an unknown function"),
@@ -1408,14 +1408,14 @@ func TestParseString(t *testing.T) {
 	}{
 		{
 			ID: testhelper.MkID("bad: no-such name"),
-			ExpErr: testhelper.MkExpErr("Can't make string-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make string-checker function:" +
 				" nonesuch is an unknown function"),
 			expr: "nonesuch",
 		},
 		{
 			ID: testhelper.MkID("bad: not a named function"),
-			ExpErr: testhelper.MkExpErr("Can't make string-checker function:" +
-				" Syntax error: unexpected call type: *ast.FuncLit"),
+			ExpErr: testhelper.MkExpErr("can't make string-checker function:" +
+				" syntax error: unexpected call type: *ast.FuncLit"),
 			expr: "func(){}()",
 		},
 		{
@@ -1443,7 +1443,7 @@ func TestParseString(t *testing.T) {
 		{
 			ID: testhelper.MkID("no-params: bad: with params"),
 			ExpErr: testhelper.MkExpErr(
-				"Can't make string-checker function: OK()",
+				"can't make string-checker function: OK()",
 				"the call has 1 arguments, it should have 0"),
 			expr:   "OK(42)",
 			expLen: 1,
@@ -1466,21 +1466,21 @@ func TestParseString(t *testing.T) {
 		},
 		{
 			ID: testhelper.MkID("1 string param: bad: EQ, bad args"),
-			ExpErr: testhelper.MkExpErr("Can't make string-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make string-checker function:" +
 				" EQ(string):" +
 				" \"42\" isn't a STRING, it's a INT"),
 			expr: "EQ(42)",
 		},
 		{
 			ID: testhelper.MkID("1 string param: bad: EQ, too few args"),
-			ExpErr: testhelper.MkExpErr("Can't make string-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make string-checker function:" +
 				" EQ(string):" +
 				" the call has 0 arguments, it should have 1"),
 			expr: "EQ()",
 		},
 		{
 			ID: testhelper.MkID("1 string param: bad: EQ, too many args"),
-			ExpErr: testhelper.MkExpErr("Can't make string-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make string-checker function:" +
 				" EQ(string):" +
 				" the call has 2 arguments, it should have 1"),
 			expr: "EQ(`Hello`, `World`)",
@@ -1494,21 +1494,21 @@ func TestParseString(t *testing.T) {
 		},
 		{
 			ID: testhelper.MkID("1 string param: bad: GT, bad args"),
-			ExpErr: testhelper.MkExpErr("Can't make string-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make string-checker function:" +
 				" GT(string):" +
 				" \"42\" isn't a STRING, it's a INT"),
 			expr: "GT(42)",
 		},
 		{
 			ID: testhelper.MkID("1 string param: bad: GT, too few args"),
-			ExpErr: testhelper.MkExpErr("Can't make string-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make string-checker function:" +
 				" GT(string):" +
 				" the call has 0 arguments, it should have 1"),
 			expr: "GT()",
 		},
 		{
 			ID: testhelper.MkID("1 string param: bad: GT, too many args"),
-			ExpErr: testhelper.MkExpErr("Can't make string-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make string-checker function:" +
 				" GT(string):" +
 				" the call has 2 arguments, it should have 1"),
 			expr: "GT(`A`, `B`)",
@@ -1522,21 +1522,21 @@ func TestParseString(t *testing.T) {
 		},
 		{
 			ID: testhelper.MkID("1 string param: bad: GE, bad args"),
-			ExpErr: testhelper.MkExpErr("Can't make string-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make string-checker function:" +
 				" GE(string):" +
 				" \"42\" isn't a STRING, it's a INT"),
 			expr: "GE(42)",
 		},
 		{
 			ID: testhelper.MkID("1 string param: bad: GE, too few args"),
-			ExpErr: testhelper.MkExpErr("Can't make string-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make string-checker function:" +
 				" GE(string):" +
 				" the call has 0 arguments, it should have 1"),
 			expr: "GE()",
 		},
 		{
 			ID: testhelper.MkID("1 string param: bad: GE, too many args"),
-			ExpErr: testhelper.MkExpErr("Can't make string-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make string-checker function:" +
 				" GE(string):" +
 				" the call has 2 arguments, it should have 1"),
 			expr: "GE(1, 2)",
@@ -1550,21 +1550,21 @@ func TestParseString(t *testing.T) {
 		},
 		{
 			ID: testhelper.MkID("1 string param: bad: LT, bad args"),
-			ExpErr: testhelper.MkExpErr("Can't make string-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make string-checker function:" +
 				" LT(string):" +
 				" \"42\" isn't a STRING, it's a INT"),
 			expr: "LT(42)",
 		},
 		{
 			ID: testhelper.MkID("1 string param: bad: LT, too few args"),
-			ExpErr: testhelper.MkExpErr("Can't make string-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make string-checker function:" +
 				" LT(string):" +
 				" the call has 0 arguments, it should have 1"),
 			expr: "LT()",
 		},
 		{
 			ID: testhelper.MkID("1 string param: bad: LT, too many args"),
-			ExpErr: testhelper.MkExpErr("Can't make string-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make string-checker function:" +
 				" LT(string):" +
 				" the call has 2 arguments, it should have 1"),
 			expr: "LT(1, 2)",
@@ -1578,21 +1578,21 @@ func TestParseString(t *testing.T) {
 		},
 		{
 			ID: testhelper.MkID("1 string param: bad: LE, bad args"),
-			ExpErr: testhelper.MkExpErr("Can't make string-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make string-checker function:" +
 				" LE(string):" +
 				" \"42\" isn't a STRING, it's a INT"),
 			expr: "LE(42)",
 		},
 		{
 			ID: testhelper.MkID("1 string param: bad: LE, too few args"),
-			ExpErr: testhelper.MkExpErr("Can't make string-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make string-checker function:" +
 				" LE(string):" +
 				" the call has 0 arguments, it should have 1"),
 			expr: "LE()",
 		},
 		{
 			ID: testhelper.MkID("1 string param: bad: LE, too many args"),
-			ExpErr: testhelper.MkExpErr("Can't make string-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make string-checker function:" +
 				" LE(string):" +
 				" the call has 2 arguments, it should have 1"),
 			expr: "LE(1, 2)",
@@ -1606,14 +1606,14 @@ func TestParseString(t *testing.T) {
 		},
 		{
 			ID: testhelper.MkID("1 string param: bad: HasPrefix, bad args"),
-			ExpErr: testhelper.MkExpErr("Can't make string-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make string-checker function:" +
 				" HasPrefix(string):" +
 				" \"42\" isn't a STRING, it's a INT"),
 			expr: "HasPrefix(42)",
 		},
 		{
 			ID: testhelper.MkID("1 string param: bad: HasPrefix, too few args"),
-			ExpErr: testhelper.MkExpErr("Can't make string-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make string-checker function:" +
 				" HasPrefix(string):" +
 				" the call has 0 arguments, it should have 1"),
 			expr: "HasPrefix()",
@@ -1621,7 +1621,7 @@ func TestParseString(t *testing.T) {
 		{
 			ID: testhelper.MkID(
 				"1 string param: bad: HasPrefix, too many args"),
-			ExpErr: testhelper.MkExpErr("Can't make string-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make string-checker function:" +
 				" HasPrefix(string):" +
 				" the call has 2 arguments, it should have 1"),
 			expr: "HasPrefix(1, 2)",
@@ -1635,14 +1635,14 @@ func TestParseString(t *testing.T) {
 		},
 		{
 			ID: testhelper.MkID("1 string param: bad: HasSuffix, bad args"),
-			ExpErr: testhelper.MkExpErr("Can't make string-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make string-checker function:" +
 				" HasSuffix(string):" +
 				" \"42\" isn't a STRING, it's a INT"),
 			expr: "HasSuffix(42)",
 		},
 		{
 			ID: testhelper.MkID("1 string param: bad: HasSuffix, too few args"),
-			ExpErr: testhelper.MkExpErr("Can't make string-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make string-checker function:" +
 				" HasSuffix(string):" +
 				" the call has 0 arguments, it should have 1"),
 			expr: "HasSuffix()",
@@ -1650,7 +1650,7 @@ func TestParseString(t *testing.T) {
 		{
 			ID: testhelper.MkID(
 				"1 string param: bad: HasSuffix, too many args"),
-			ExpErr: testhelper.MkExpErr("Can't make string-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make string-checker function:" +
 				" HasSuffix(string):" +
 				" the call has 2 arguments, it should have 1"),
 			expr: "HasSuffix(1, 2)",
@@ -1664,7 +1664,7 @@ func TestParseString(t *testing.T) {
 		},
 		{
 			ID: testhelper.MkID("1 int-checker param: bad: Length, bad args"),
-			ExpErr: testhelper.MkExpErr("Can't make string-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make string-checker function:" +
 				" Length(int-checker):" +
 				" can't convert argument 0 to int-checker:" +
 				" unexpected type: *ast.BasicLit"),
@@ -1673,7 +1673,7 @@ func TestParseString(t *testing.T) {
 		{
 			ID: testhelper.MkID(
 				"1 int-checker param: bad: Length, too few args"),
-			ExpErr: testhelper.MkExpErr("Can't make string-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make string-checker function:" +
 				" Length(int-checker):" +
 				" the call has 0 arguments, it should have 1"),
 			expr: "Length()",
@@ -1681,7 +1681,7 @@ func TestParseString(t *testing.T) {
 		{
 			ID: testhelper.MkID(
 				"1 int-checker param: bad: Length, too many args"),
-			ExpErr: testhelper.MkExpErr("Can't make string-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make string-checker function:" +
 				" Length(int-checker):" +
 				" the call has 2 arguments, it should have 1"),
 			expr: "Length(GE(1), Divides(40))",
@@ -1697,7 +1697,7 @@ func TestParseString(t *testing.T) {
 		{
 			ID: testhelper.MkID(
 				"1 regexp, 1 string param: bad: MatchesPattern, bad args 1st"),
-			ExpErr: testhelper.MkExpErr("Can't make string-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make string-checker function:" +
 				" MatchesPattern(regexp, string):" +
 				" \"42\" isn't a STRING, it's a INT"),
 			expr: "MatchesPattern(42, `name`)",
@@ -1705,7 +1705,7 @@ func TestParseString(t *testing.T) {
 		{
 			ID: testhelper.MkID(
 				"1 regexp, 1 string param: bad: MatchesPattern, bad regexp"),
-			ExpErr: testhelper.MkExpErr("Can't make string-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make string-checker function:" +
 				" MatchesPattern(regexp, string):" +
 				" the regexp doesn't compile:" +
 				" error parsing regexp: missing closing ]: `[Wworld``"),
@@ -1714,7 +1714,7 @@ func TestParseString(t *testing.T) {
 		{
 			ID: testhelper.MkID(
 				"1 regexp, 1 string param: bad: MatchesPattern, bad args 2nd"),
-			ExpErr: testhelper.MkExpErr("Can't make string-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make string-checker function:" +
 				" MatchesPattern(regexp, string):" +
 				" \"42\" isn't a STRING, it's a INT"),
 			expr: "MatchesPattern(`name`, 42)",
@@ -1722,7 +1722,7 @@ func TestParseString(t *testing.T) {
 		{
 			ID: testhelper.MkID(
 				"1 regexp, 1 string param: bad: MatchesPattern, too few args"),
-			ExpErr: testhelper.MkExpErr("Can't make string-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make string-checker function:" +
 				" MatchesPattern(regexp, string):" +
 				" the call has 0 arguments, it should have 2"),
 			expr: "MatchesPattern()",
@@ -1730,7 +1730,7 @@ func TestParseString(t *testing.T) {
 		{
 			ID: testhelper.MkID(
 				"1 regexp, 1 string param: bad: MatchesPattern, too many args"),
-			ExpErr: testhelper.MkExpErr("Can't make string-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make string-checker function:" +
 				" MatchesPattern(regexp, string):" +
 				" the call has 1 arguments, it should have 2"),
 			expr: "MatchesPattern(`.*`)",
@@ -1738,7 +1738,7 @@ func TestParseString(t *testing.T) {
 		{
 			ID: testhelper.MkID(
 				"1 regexp, 1 string param: bad: MatchesPattern, too many args"),
-			ExpErr: testhelper.MkExpErr("Can't make string-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make string-checker function:" +
 				" MatchesPattern(regexp, string):" +
 				" the call has 3 arguments, it should have 2"),
 			expr: "MatchesPattern(`.*`, `any`, ` value`)",
@@ -1766,7 +1766,7 @@ func TestParseString(t *testing.T) {
 		{
 			ID: testhelper.MkID(
 				"string-ckr, str param: bad: Not, bad args (1st)"),
-			ExpErr: testhelper.MkExpErr("Can't make string-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make string-checker function:" +
 				" Not(string-checker, string):" +
 				" can't convert argument 0 to string-checker:" +
 				" unexpected type: *ast.BasicLit"),
@@ -1775,7 +1775,7 @@ func TestParseString(t *testing.T) {
 		{
 			ID: testhelper.MkID(
 				"string-ckr, str param: bad: Not, bad args (2nd)"),
-			ExpErr: testhelper.MkExpErr("Can't make string-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make string-checker function:" +
 				" Not(string-checker, string):" +
 				" \"42\" isn't a STRING, it's a INT"),
 			expr: "Not(GE(`A`), 42)",
@@ -1783,7 +1783,7 @@ func TestParseString(t *testing.T) {
 		{
 			ID: testhelper.MkID(
 				"string-ckr, str param: bad: Not, too many args"),
-			ExpErr: testhelper.MkExpErr("Can't make string-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make string-checker function:" +
 				" Not(string-checker, string):" +
 				" the call has 3 arguments, it should have 2"),
 			expr: "Not(GE(`A`), `Hello`, `World`)",
@@ -1791,7 +1791,7 @@ func TestParseString(t *testing.T) {
 		{
 			ID: testhelper.MkID(
 				"string-ckr, str param: bad: Not, too few args"),
-			ExpErr: testhelper.MkExpErr("Can't make string-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make string-checker function:" +
 				" Not(string-checker, string):" +
 				" the call has 1 arguments, it should have 2"),
 			expr: "Not(GE(`A`))",
@@ -1814,7 +1814,7 @@ func TestParseString(t *testing.T) {
 		},
 		{
 			ID: testhelper.MkID("...string-ckr param: bad: And: not CF"),
-			ExpErr: testhelper.MkExpErr("Can't make string-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make string-checker function:" +
 				" And(..., string-checker):" +
 				" can't convert argument 1 to string-checker:" +
 				" nonesuch is an unknown function"),
@@ -1836,7 +1836,7 @@ func TestParseString(t *testing.T) {
 		},
 		{
 			ID: testhelper.MkID("...string-ckr param: bad: Or: not CF"),
-			ExpErr: testhelper.MkExpErr("Can't make string-checker function:" +
+			ExpErr: testhelper.MkExpErr("can't make string-checker function:" +
 				" Or(..., string-checker):" +
 				" can't convert argument 1 to string-checker:" +
 				" nonesuch is an unknown function"),
@@ -1889,15 +1889,15 @@ func TestParseStringSlice(t *testing.T) {
 		{
 			ID: testhelper.MkID("bad: no-such name"),
 			ExpErr: testhelper.MkExpErr(
-				"Can't make string-slice-checker function:" +
+				"can't make string-slice-checker function:" +
 					" nonesuch is an unknown function"),
 			expr: "nonesuch",
 		},
 		{
 			ID: testhelper.MkID("bad: not a named function"),
 			ExpErr: testhelper.MkExpErr(
-				"Can't make string-slice-checker function:" +
-					" Syntax error: unexpected call type: *ast.FuncLit"),
+				"can't make string-slice-checker function:" +
+					" syntax error: unexpected call type: *ast.FuncLit"),
 			expr: "func(){}()",
 		},
 		{
@@ -1925,7 +1925,7 @@ func TestParseStringSlice(t *testing.T) {
 		{
 			ID: testhelper.MkID("no-params: bad: with params"),
 			ExpErr: testhelper.MkExpErr(
-				"Can't make string-slice-checker function: OK()",
+				"can't make string-slice-checker function: OK()",
 				"the call has 1 arguments, it should have 0"),
 			expr:   "OK(42)",
 			expLen: 1,
@@ -1960,7 +1960,7 @@ func TestParseStringSlice(t *testing.T) {
 		{
 			ID: testhelper.MkID("no-params: bad: with params"),
 			ExpErr: testhelper.MkExpErr(
-				"Can't make string-slice-checker function: NoDups()",
+				"can't make string-slice-checker function: NoDups()",
 				"the call has 1 arguments, it should have 0"),
 			expr:   "NoDups(42)",
 			expLen: 1,
@@ -1988,7 +1988,7 @@ func TestParseStringSlice(t *testing.T) {
 		{
 			ID: testhelper.MkID("1 int-checker param: bad: Length, bad args"),
 			ExpErr: testhelper.MkExpErr(
-				"Can't make string-slice-checker function:" +
+				"can't make string-slice-checker function:" +
 					" Length(int-checker):" +
 					" can't convert argument 0 to int-checker:" +
 					" unexpected type: *ast.BasicLit"),
@@ -1998,7 +1998,7 @@ func TestParseStringSlice(t *testing.T) {
 			ID: testhelper.MkID(
 				"1 int-checker param: bad: Length, too few args"),
 			ExpErr: testhelper.MkExpErr(
-				"Can't make string-slice-checker function:" +
+				"can't make string-slice-checker function:" +
 					" Length(int-checker):" +
 					" the call has 0 arguments, it should have 1"),
 			expr: "Length()",
@@ -2007,7 +2007,7 @@ func TestParseStringSlice(t *testing.T) {
 			ID: testhelper.MkID(
 				"1 int-checker param: bad: Length, too many args"),
 			ExpErr: testhelper.MkExpErr(
-				"Can't make string-slice-checker function:" +
+				"can't make string-slice-checker function:" +
 					" Length(int-checker):" +
 					" the call has 2 arguments, it should have 1"),
 			expr: "Length(GE(1), Divides(40))",
@@ -2023,7 +2023,7 @@ func TestParseStringSlice(t *testing.T) {
 			ID: testhelper.MkID(
 				"str-slc-ckr, str param: bad: Not, bad args (1st)"),
 			ExpErr: testhelper.MkExpErr(
-				"Can't make string-slice-checker function:" +
+				"can't make string-slice-checker function:" +
 					" Not(string-slice-checker, string):" +
 					" can't convert argument 0 to string-slice-checker:" +
 					" unexpected type: *ast.BasicLit"),
@@ -2033,7 +2033,7 @@ func TestParseStringSlice(t *testing.T) {
 			ID: testhelper.MkID(
 				"str-slc-ckr, str param: bad: Not, bad args (2nd)"),
 			ExpErr: testhelper.MkExpErr(
-				"Can't make string-slice-checker function:" +
+				"can't make string-slice-checker function:" +
 					" Not(string-slice-checker, string):" +
 					" \"1\" isn't a STRING, it's a INT"),
 			expr: "Not(Length(GE(1)), 1)",
@@ -2042,7 +2042,7 @@ func TestParseStringSlice(t *testing.T) {
 			ID: testhelper.MkID(
 				"str-slc-ckr, str param: bad: Not, too many args"),
 			ExpErr: testhelper.MkExpErr(
-				"Can't make string-slice-checker function:" +
+				"can't make string-slice-checker function:" +
 					" Not(string-slice-checker, string):" +
 					" the call has 3 arguments, it should have 2"),
 			expr: "Not(GE(1), `Hello`, `World`)",
@@ -2051,7 +2051,7 @@ func TestParseStringSlice(t *testing.T) {
 			ID: testhelper.MkID(
 				"str-slc-ckr, str param: bad: Not, too few args"),
 			ExpErr: testhelper.MkExpErr(
-				"Can't make string-slice-checker function:" +
+				"can't make string-slice-checker function:" +
 					" Not(string-slice-checker, string):" +
 					" the call has 1 arguments, it should have 2"),
 			expr: "Not(GE(1))",
@@ -2073,7 +2073,7 @@ func TestParseStringSlice(t *testing.T) {
 			ID: testhelper.MkID(
 				"string-checker, string param: bad: SliceAny, bad args (1st)"),
 			ExpErr: testhelper.MkExpErr(
-				"Can't make string-slice-checker function:" +
+				"can't make string-slice-checker function:" +
 					" SliceAny(string-checker, string):" +
 					" can't convert argument 0 to string-checker:" +
 					" unexpected type: *ast.BasicLit"),
@@ -2083,7 +2083,7 @@ func TestParseStringSlice(t *testing.T) {
 			ID: testhelper.MkID(
 				"string-checker, string param: bad: SliceAny, bad args (2nd)"),
 			ExpErr: testhelper.MkExpErr(
-				"Can't make string-slice-checker function:" +
+				"can't make string-slice-checker function:" +
 					" SliceAny(string-checker, string):" +
 					" \"42\" isn't a STRING, it's a INT"),
 			expr: "SliceAny(OK, 42)",
@@ -2092,7 +2092,7 @@ func TestParseStringSlice(t *testing.T) {
 			ID: testhelper.MkID(
 				"string-checker, string param: bad: SliceAny, too few args"),
 			ExpErr: testhelper.MkExpErr(
-				"Can't make string-slice-checker function:" +
+				"can't make string-slice-checker function:" +
 					" SliceAny(string-checker, string):" +
 					" the call has 0 arguments, it should have 2"),
 			expr: "SliceAny()",
@@ -2101,7 +2101,7 @@ func TestParseStringSlice(t *testing.T) {
 			ID: testhelper.MkID(
 				"string-checker, string param: bad: SliceAny, too few args"),
 			ExpErr: testhelper.MkExpErr(
-				"Can't make string-slice-checker function:" +
+				"can't make string-slice-checker function:" +
 					" SliceAny(string-checker, string):" +
 					" the call has 1 arguments, it should have 2"),
 			expr: "SliceAny(Length(GT(3)))",
@@ -2110,7 +2110,7 @@ func TestParseStringSlice(t *testing.T) {
 			ID: testhelper.MkID(
 				"string-checker, string param: bad: SliceAny, too many args"),
 			ExpErr: testhelper.MkExpErr(
-				"Can't make string-slice-checker function:" +
+				"can't make string-slice-checker function:" +
 					" SliceAny(string-checker, string):" +
 					" the call has 3 arguments, it should have 2"),
 			expr: "SliceAny(Length(GE(1)), `str-slc-ckr`, 42)",
@@ -2136,7 +2136,7 @@ func TestParseStringSlice(t *testing.T) {
 			ID: testhelper.MkID(
 				"string-checker param: bad: SliceAll, bad args"),
 			ExpErr: testhelper.MkExpErr(
-				"Can't make string-slice-checker function:" +
+				"can't make string-slice-checker function:" +
 					" SliceAll(string-checker):" +
 					" can't convert argument 0 to string-checker:" +
 					" unexpected type: *ast.BasicLit"),
@@ -2146,7 +2146,7 @@ func TestParseStringSlice(t *testing.T) {
 			ID: testhelper.MkID(
 				"string-checker param: bad: SliceAll, too few args"),
 			ExpErr: testhelper.MkExpErr(
-				"Can't make string-slice-checker function:" +
+				"can't make string-slice-checker function:" +
 					" SliceAll(string-checker):" +
 					" the call has 0 arguments, it should have 1"),
 			expr: "SliceAll()",
@@ -2155,7 +2155,7 @@ func TestParseStringSlice(t *testing.T) {
 			ID: testhelper.MkID(
 				"string-checker param: bad: SliceAll, too many args"),
 			ExpErr: testhelper.MkExpErr(
-				"Can't make string-slice-checker function:" +
+				"can't make string-slice-checker function:" +
 					" SliceAll(string-checker):" +
 					" the call has 2 arguments, it should have 1"),
 			expr: "SliceAll(Length(GE(1)), 42)",
@@ -2183,7 +2183,7 @@ func TestParseStringSlice(t *testing.T) {
 			ID: testhelper.MkID(
 				"string-checker param: bad: SliceByPos, bad args"),
 			ExpErr: testhelper.MkExpErr(
-				"Can't make string-slice-checker function:" +
+				"can't make string-slice-checker function:" +
 					" SliceByPos(..., string-checker):" +
 					" can't convert argument 0 to string-checker:" +
 					" unexpected type: *ast.BasicLit"),
@@ -2208,7 +2208,7 @@ func TestParseStringSlice(t *testing.T) {
 		{
 			ID: testhelper.MkID("...str-slc-ckr param: bad: And: not CF"),
 			ExpErr: testhelper.MkExpErr(
-				"Can't make string-slice-checker function:" +
+				"can't make string-slice-checker function:" +
 					" And(..., string-slice-checker):" +
 					" can't convert argument 1 to string-slice-checker:" +
 					" nonesuch is an unknown function"),
@@ -2244,7 +2244,7 @@ func TestParseStringSlice(t *testing.T) {
 		{
 			ID: testhelper.MkID("...str-slc-ckr param: bad: Or: not CF"),
 			ExpErr: testhelper.MkExpErr(
-				"Can't make string-slice-checker function:" +
+				"can't make string-slice-checker function:" +
 					" Or(..., string-slice-checker):" +
 					" can't convert argument 1 to string-slice-checker:" +
 					" nonesuch is an unknown function"),

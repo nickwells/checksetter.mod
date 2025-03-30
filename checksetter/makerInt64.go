@@ -26,7 +26,7 @@ var (
 
 			maker, ok := funcs[fName]
 			if !ok {
-				return nil, fmt.Errorf("Unknown function: %q", fName)
+				return nil, fmt.Errorf(errFmtUnknownFunc, fName)
 			}
 
 			defer func() {
@@ -73,7 +73,7 @@ var (
 
 			maker, ok := funcs[fName]
 			if !ok {
-				return nil, fmt.Errorf("Unknown function: %q", fName)
+				return nil, fmt.Errorf(errFmtUnknownFunc, fName)
 			}
 
 			defer func() {
@@ -117,7 +117,7 @@ var (
 
 			maker, ok := funcs[fName]
 			if !ok {
-				return nil, fmt.Errorf("Unknown function: %q", fName)
+				return nil, fmt.Errorf(errFmtUnknownFunc, fName)
 			}
 
 			defer func() {
@@ -166,7 +166,7 @@ var (
 
 			maker, ok := funcs[fName]
 			if !ok {
-				return nil, fmt.Errorf("Unknown function: %q", fName)
+				return nil, fmt.Errorf(errFmtUnknownFunc, fName)
 			}
 
 			defer func() {
@@ -216,13 +216,14 @@ var (
 
 			maker, ok := funcs[fName]
 			if !ok {
-				return nil, fmt.Errorf("Unknown function: %q", fName)
+				return nil, fmt.Errorf(errFmtUnknownFunc, fName)
 			}
 
 			defer func() {
 				if err != nil {
 					err = fmt.Errorf("%s(%s): %w",
-						fName, strings.Join(i64MakerMultiI64checkerArgs, ", "), err)
+						fName,
+						strings.Join(i64MakerMultiI64checkerArgs, ", "), err)
 				}
 			}()
 			defer func() {

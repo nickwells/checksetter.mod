@@ -38,7 +38,7 @@ func MakeParser[T any](checkerName string, makers map[string]MakerInfo[T]) (
 ) {
 	if _, exists := parserRegister[checkerName]; exists {
 		return Parser[T]{},
-			fmt.Errorf("A Parser for %q already exists", checkerName)
+			fmt.Errorf("a Parser for %q already exists", checkerName)
 	}
 
 	p := Parser[T]{
@@ -65,7 +65,7 @@ func (p Parser[T]) Makers() []string {
 func (p Parser[T]) Args(makerName string) ([]string, error) {
 	mi, ok := p.makers[makerName]
 	if !ok {
-		return []string{}, fmt.Errorf("Unknown maker: %q", makerName)
+		return []string{}, fmt.Errorf(errFmtUnknownMaker, makerName)
 	}
 
 	return mi.Args, nil
@@ -106,7 +106,7 @@ func (p Parser[T]) Parse(s string) ([]check.ValCk[T], error) {
 		f, err := p.ParseExpr(e)
 		if err != nil {
 			return nil,
-				fmt.Errorf("Can't make %s function: %s",
+				fmt.Errorf("can't make %s function: %s",
 					p.checkerName, err)
 		}
 
@@ -154,7 +154,7 @@ func (p Parser[T]) ParseExpr(elt ast.Expr) (cf check.ValCk[T], err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			cf = nil
-			err = fmt.Errorf("Can't create the %s func: %v", p.checkerName, r)
+			err = fmt.Errorf("can't create the %s func: %v", p.checkerName, r)
 		}
 	}()
 
@@ -172,7 +172,7 @@ func (p Parser[T]) ParseExpr(elt ast.Expr) (cf check.ValCk[T], err error) {
 func getFuncName(e *ast.CallExpr) (string, error) {
 	fID, ok := e.Fun.(*ast.Ident)
 	if !ok {
-		return "", fmt.Errorf("Syntax error: unexpected call type: %T", e.Fun)
+		return "", fmt.Errorf("syntax error: unexpected call type: %T", e.Fun)
 	}
 
 	return fID.Name, nil

@@ -27,7 +27,7 @@ var (
 
 			maker, ok := funcs[fName]
 			if !ok {
-				return nil, fmt.Errorf("Unknown function: %q", fName)
+				return nil, fmt.Errorf(errFmtUnknownFunc, fName)
 			}
 
 			defer func() {
@@ -68,7 +68,7 @@ var (
 
 			maker, ok := funcs[fName]
 			if !ok {
-				return nil, fmt.Errorf("Unknown function: %q", fName)
+				return nil, fmt.Errorf(errFmtUnknownFunc, fName)
 			}
 
 			defer func() {
@@ -119,7 +119,7 @@ var strSlcMakerStrSlccheckerString = MakerInfo[[]string]{
 
 		maker, ok := funcs[fName]
 		if !ok {
-			return nil, fmt.Errorf("Unknown function: %q", fName)
+			return nil, fmt.Errorf(errFmtUnknownFunc, fName)
 		}
 
 		defer func() {
@@ -171,7 +171,7 @@ var (
 
 			maker, ok := funcs[fName]
 			if !ok {
-				return nil, fmt.Errorf("Unknown function: %q", fName)
+				return nil, fmt.Errorf(errFmtUnknownFunc, fName)
 			}
 
 			defer func() {
@@ -222,7 +222,7 @@ var (
 
 			maker, ok := funcs[fName]
 			if !ok {
-				return nil, fmt.Errorf("Unknown function: %q", fName)
+				return nil, fmt.Errorf(errFmtUnknownFunc, fName)
 			}
 
 			defer func() {
@@ -266,7 +266,7 @@ var (
 
 			maker, ok := funcs[fName]
 			if !ok {
-				return nil, fmt.Errorf("Unknown function: %q", fName)
+				return nil, fmt.Errorf(errFmtUnknownFunc, fName)
 			}
 
 			defer func() {
@@ -310,7 +310,7 @@ var (
 
 			maker, ok := funcs[fName]
 			if !ok {
-				return nil, fmt.Errorf("Unknown function: %q", fName)
+				return nil, fmt.Errorf(errFmtUnknownFunc, fName)
 			}
 
 			defer func() {

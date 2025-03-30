@@ -7,7 +7,7 @@ import "testing"
 func reportUnknownFuncErr(t *testing.T, err error, cName, fName string) {
 	t.Helper()
 
-	expErrMsg := `Unknown function: "nonesuch"`
+	expErrMsg := `unknown function: "nonesuch"`
 
 	if err == nil || err.Error() != expErrMsg {
 		t.Logf("Checker: %q, function: %q", cName, fName)

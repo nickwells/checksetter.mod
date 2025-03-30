@@ -126,13 +126,13 @@ func FindParser[T any](checkerName string) (*Parser[T], error) {
 	anyParser, ok := parserRegister[checkerName]
 	if !ok {
 		return nil,
-			fmt.Errorf("There is no Parser registered for %q", checkerName)
+			fmt.Errorf("there is no Parser registered for %q", checkerName)
 	}
 
 	parser, ok := anyParser.(*Parser[T])
 	if !ok {
 		return nil,
-			fmt.Errorf("The Parser for %q is of the wrong type (%T)",
+			fmt.Errorf("the Parser for %q is of the wrong type (%T)",
 				checkerName, anyParser)
 	}
 

@@ -130,7 +130,7 @@ func TestGetInt(t *testing.T) {
 			ID:    testhelper.MkID("bad - int too big"),
 			param: bigLitInt,
 			ExpErr: testhelper.MkExpErr(
-				`Couldn't make an int from "999999999999999999999":` +
+				`couldn't make an int from "999999999999999999999":` +
 					` strconv.ParseInt: parsing "999999999999999999999":` +
 					` value out of range`),
 		},
@@ -180,7 +180,7 @@ func TestGetFloat(t *testing.T) {
 			ID:    testhelper.MkID("bad - not a BasicLit"),
 			param: bigLitFloat,
 			ExpErr: testhelper.MkExpErr(
-				`Couldn't make a float "1e999999":` +
+				`couldn't make a float from "1e999999":` +
 					` strconv.ParseFloat: parsing "1e999999":` +
 					` value out of range`),
 		},
@@ -346,12 +346,12 @@ func TestGetCheckFunc(t *testing.T) {
 		{
 			ID: testhelper.MkID("bad, idx too big"),
 			ExpErr: testhelper.MkExpErr(
-				"Index (2) is too large, there are only 2 arguments"),
+				"index (2) is too large, there are only 2 arguments"),
 			idx: 2,
 		},
 		{
 			ID:     testhelper.MkID("bad, idx < 0"),
-			ExpErr: testhelper.MkExpErr("Index (-1) must be >= 0"),
+			ExpErr: testhelper.MkExpErr("index (-1) must be >= 0"),
 			idx:    -1,
 		},
 	}
@@ -370,7 +370,7 @@ func TestGetCheckFunc(t *testing.T) {
 	}
 
 	expErr := testhelper.MkExpErr(
-		`There is no Parser registered for "nonesuch"`)
+		`there is no Parser registered for "nonesuch"`)
 	_, err = getCheckFunc[int](callExpr, 1, "nonesuch")
 	testhelper.CheckExpErrWithID(t, "nonesuch", err, expErr)
 }
@@ -476,7 +476,7 @@ func TestGetCheckFuncs(t *testing.T) {
 	}
 
 	expErr := testhelper.MkExpErr(
-		`There is no Parser registered for "nonesuch"`)
+		`there is no Parser registered for "nonesuch"`)
 	_, err := getCheckFuncs[int](nil, "nonesuch")
 
 	testhelper.CheckExpErrWithID(t, "nonesuch", err, expErr)

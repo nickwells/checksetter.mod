@@ -16,7 +16,7 @@ import (
 func getInt64(e ast.Expr) (int64, error) {
 	v, ok := e.(*ast.BasicLit)
 	if !ok {
-		return 0, fmt.Errorf("the expression isn't a BasicLit, it's a %T", e)
+		return 0, fmt.Errorf(errFmtNotABasicLit, e)
 	}
 
 	if v.Kind != token.INT {
@@ -25,7 +25,7 @@ func getInt64(e ast.Expr) (int64, error) {
 
 	i, err := strconv.ParseInt(v.Value, 0, 64)
 	if err != nil {
-		return 0, fmt.Errorf("Couldn't make an int from %q: %s", v.Value, err)
+		return 0, fmt.Errorf(errFmtBadInt, v.Value, err)
 	}
 
 	return i, nil
@@ -43,7 +43,7 @@ func getInt(e ast.Expr) (int, error) {
 func getFloat64(e ast.Expr) (float64, error) {
 	v, ok := e.(*ast.BasicLit)
 	if !ok {
-		return 0, fmt.Errorf("the expression isn't a BasicLit, it's a %T", e)
+		return 0, fmt.Errorf(errFmtNotABasicLit, e)
 	}
 
 	if v.Kind != token.FLOAT && v.Kind != token.INT {
@@ -52,7 +52,7 @@ func getFloat64(e ast.Expr) (float64, error) {
 
 	f, err := strconv.ParseFloat(v.Value, 64)
 	if err != nil {
-		return 0, fmt.Errorf("Couldn't make a float %q: %s", v.Value, err)
+		return 0, fmt.Errorf(errFmtBadFloat, v.Value, err)
 	}
 
 	return f, nil
@@ -63,7 +63,7 @@ func getFloat64(e ast.Expr) (float64, error) {
 func getString(e ast.Expr) (string, error) {
 	v, ok := e.(*ast.BasicLit)
 	if !ok {
-		return "", fmt.Errorf("the expression isn't a BasicLit, it's a %T", e)
+		return "", fmt.Errorf(errFmtNotABasicLit, e)
 	}
 
 	if v.Kind != token.STRING {
@@ -144,12 +144,12 @@ func getCheckFunc[T any](e *ast.CallExpr, idx int, checkerName string) (
 	check.ValCk[T], error,
 ) {
 	if idx < 0 {
-		return nil, fmt.Errorf("Index (%d) must be >= 0", idx)
+		return nil, fmt.Errorf("index (%d) must be >= 0", idx)
 	}
 
 	if idx >= len(e.Args) {
 		return nil,
-			fmt.Errorf("Index (%d) is too large, there are only %d arguments",
+			fmt.Errorf("index (%d) is too large, there are only %d arguments",
 				idx, len(e.Args))
 	}
 
