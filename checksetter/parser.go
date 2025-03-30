@@ -31,9 +31,8 @@ type Parser[T any] struct {
 	makers      map[string]MakerInfo[T]
 }
 
-// MakeParser[T any] creates a new parser and adds it to the Parser
-// register. It will return an error if there is already an entry with the
-// same name.
+// MakeParser creates a new parser and adds it to the Parser register. It
+// will return an error if there is already an entry with the same name.
 func MakeParser[T any](checkerName string, makers map[string]MakerInfo[T]) (
 	Parser[T], error,
 ) {

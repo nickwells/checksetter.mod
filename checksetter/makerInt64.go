@@ -8,6 +8,8 @@ import (
 	"github.com/nickwells/check.mod/v2/check"
 )
 
+// Int64CheckerName is the value to use to select the Parser to use when
+// creating checkers for int64 values
 const Int64CheckerName = "int64-checker"
 
 var (

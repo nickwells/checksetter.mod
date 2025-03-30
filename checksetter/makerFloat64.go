@@ -8,6 +8,8 @@ import (
 	"github.com/nickwells/check.mod/v2/check"
 )
 
+// Float64CheckerName is the value to use to select the Parser to use when
+// creating checkers for float64 values
 const Float64CheckerName = "float64-checker"
 
 var (

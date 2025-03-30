@@ -9,6 +9,8 @@ import (
 	"github.com/nickwells/check.mod/v2/check"
 )
 
+// StringCheckerName is the value to use to select the Parser to use when
+// creating checkers for string values
 const StringCheckerName = "string-checker"
 
 var (

@@ -8,6 +8,8 @@ import (
 	"github.com/nickwells/check.mod/v2/check"
 )
 
+// StringSliceCheckerName is the value to use to select the Parser to use
+// when creating checkers for slices of strings
 const StringSliceCheckerName = "string-slice-checker"
 
 var (
