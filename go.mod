@@ -2,11 +2,11 @@ module github.com/nickwells/checksetter.mod/v4
 
 require (
 	github.com/nickwells/check.mod/v2 v2.1.28
-	github.com/nickwells/param.mod/v7 v7.1.0
+	github.com/nickwells/param.mod/v7 v7.1.2
 	github.com/nickwells/testhelper.mod/v2 v2.5.0
 )
 
-require github.com/nickwells/col.mod/v6 v6.0.3 // indirect
+require github.com/nickwells/col.mod/v6 v6.1.0 // indirect
 
 require (
 	github.com/nickwells/english.mod v1.2.8 // indirect
